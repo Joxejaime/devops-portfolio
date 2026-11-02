@@ -72,7 +72,7 @@ jobs:
           tflint --init
           tflint --recursive --minimum-failure-severity=warning
       - name: Checkov
-        uses: bridgecrewio/checkov-action@c3e106d5f8f4253a6de5110efb41a080f83db294 # v12
+        uses: bridgecrewio/checkov-action@c10e2438743528f9e4549758fad8b7a62052541d # v12
         with:
           directory: ${{ env.TF_DIR }}
           framework: terraform
