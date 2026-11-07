@@ -52,22 +52,9 @@ matches (sign-ups, balanced teams, teammate ratings and goals). The source is in
 because the app is headed to the App Store and Google Play; the architecture and the decisions are
 public here.
 
-```mermaid
-flowchart LR
-  subgraph clients[Clients]
-    app[iOS / Android app<br/>Expo]
-    web[Web app<br/>same code]
-  end
-  subgraph aws[AWS · one EC2 host, port 22 closed]
-    caddy[Caddy<br/>automatic HTTPS] --> api[API<br/>Fastify + TypeScript]
-    api -- TLS only --> db[(PostgreSQL 16)]
-  end
-  app --> caddy
-  web --> caddy
-  gha[GitHub Actions] -- OIDC, no stored keys --> ecr[ECR] --> api
-  gha -- SSM Run Command --> caddy
-  db -- nightly pg_dump --> s3[(S3 backups)]
-```
+![Pickup Football architecture: clients reach Caddy, the API and PostgreSQL on one EC2 host; GitHub Actions pushes to ECR through OIDC and deploys over SSM; nightly backups go to S3](showcase/schematics/4-pickup-football.svg)
+
+<sub>Diagram source: [`4-pickup-football.mmd`](showcase/schematics/4-pickup-football.mmd)</sub>
 
 | Area | What it uses |
 |---|---|

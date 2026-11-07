@@ -1,0 +1,14 @@
+flowchart LR
+  subgraph clients[Clients]
+    app[iOS / Android app<br/>Expo]
+    web[Web app<br/>same code]
+  end
+  subgraph aws[AWS · one EC2 host, port 22 closed]
+    caddy[Caddy<br/>automatic HTTPS] --> api[API<br/>Fastify + TypeScript]
+    api -- TLS only --> db[(PostgreSQL 16)]
+  end
+  app --> caddy
+  web --> caddy
+  gha[GitHub Actions] -- OIDC, no stored keys --> ecr[ECR] --> api
+  gha -- SSM Run Command --> caddy
+  db -- nightly pg_dump --> s3[(S3 backups)]
