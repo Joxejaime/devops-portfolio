@@ -45,6 +45,52 @@ same rules audit any existing repository by rule ID.
 
 ---
 
+## 4 · Applied: Pickup Football (private product)
+
+The same practices on a real product: a free iOS, Android and web app that organizes pickup football
+matches (sign-ups, balanced teams, teammate ratings and goals). The source is in a private repository
+because the app is headed to the App Store and Google Play; the architecture and the decisions are
+public here.
+
+```mermaid
+flowchart LR
+  subgraph clients[Clients]
+    app[iOS / Android app<br/>Expo]
+    web[Web app<br/>same code]
+  end
+  subgraph aws[AWS · one EC2 host, port 22 closed]
+    caddy[Caddy<br/>automatic HTTPS] --> api[API<br/>Fastify + TypeScript]
+    api -- TLS only --> db[(PostgreSQL 16)]
+  end
+  app --> caddy
+  web --> caddy
+  gha[GitHub Actions] -- OIDC, no stored keys --> ecr[ECR] --> api
+  gha -- SSM Run Command --> caddy
+  db -- nightly pg_dump --> s3[(S3 backups)]
+```
+
+| Area | What it uses |
+|---|---|
+| CI (adapted from [01](projects/01-secure-cicd-pipeline)) | Lint, typecheck, API tests against a real PostgreSQL, hadolint, gitleaks, Trivy gate on the image, SBOM |
+| Infrastructure (adapted from [02](projects/02-aws-terraform-platform)) | Terraform: the VPC module with NAT and flow logs made optional, one EC2 host, ECR, S3, Parameter Store, CloudWatch alarms |
+| Delivery | Deploy role trusts one branch of one repository; images pushed to ECR and started over SSM, no SSH |
+| Data safety | Database accepts encrypted connections only; nightly backups to S3 and a monthly restore rehearsal |
+| Application security | Rotating refresh tokens with reuse detection, per-account login lockout, row locks so a roster never overfills |
+
+*The cost decision: one server at about $13 a month instead of ECS, a load balancer and a NAT gateway at
+$40–50+ before there are users. The image, settings and backups carry over unchanged when traffic
+justifies moving to ECS and RDS, and the conditions for that move are written down in advance.*
+
+`TypeScript` `Fastify` `PostgreSQL` `Expo` `Docker Compose` `Caddy` `Terraform` `AWS` `GitHub Actions`
+
+**Proven** (CI green on 2026-11-07): API lint, typecheck and tests, the Trivy image gate, an HTTPS smoke test
+and a backup-and-restore drill.
+**Not yet proven:** the hadolint and gitleaks jobs, the Terraform checks, the first `terraform apply` and the
+first deploy to AWS.
+Source code is available on request for hiring processes.
+
+---
+
 ## About me
 
 I'm **Jaime Castillo Araujo**, based in Managua, Nicaragua.
