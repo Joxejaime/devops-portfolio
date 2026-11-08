@@ -48,7 +48,8 @@ same rules audit any existing repository by rule ID.
 ## 4 · Applied: Pickup Football (private product)
 
 The same practices on a real product: a free iOS, Android and web app that organizes pickup football
-matches (sign-ups, balanced teams, teammate ratings and goals). The source is in a private repository
+matches: sign-ups, teams balanced from past ratings and results, teammate ratings, goals and own goals,
+and monthly and yearly stats that players can share as cards. The source is in a private repository
 because the app is headed to the App Store and Google Play; the architecture and the decisions are
 public here.
 
@@ -63,6 +64,9 @@ public here.
 | Delivery | Deploy role trusts one branch of one repository; images pushed to ECR and started over SSM, no SSH |
 | Data safety | Database accepts encrypted connections only; nightly backups to S3 and a monthly restore rehearsal |
 | Application security | Rotating refresh tokens with reuse detection, per-account login lockout, row locks so a roster never overfills |
+| Fair teams | A pure function splits players by position, then spreads the strongest of each position so both teams end level on average strength. Strength comes from received ratings (this group first, then everywhere, recent matches weighted a little more) nudged by recent results. Measured over 400 simulated groups (not real matches yet): average gap between teams 0.19 points, against 1.27 without it. The randomizer is optional and admins can still change teams by hand |
+| Sign-in with Google and Apple | The API checks the provider's signature, issuer, audience, expiry and nonce, and keeps only the provider's stable id. A provider login links to an existing account only when that account's email was confirmed, so registering someone's address first cannot take the account over. Accounts without a password confirm deletion with the provider |
+| Privacy by design | Profile photos are small, stored in the database (so backups cover them) and visible only to people who share a group. Share cards are drawn on the phone and show only the player's own numbers; the predicted win chance used for balancing is never shown or returned |
 
 *The cost decision: one server at about $13 a month instead of ECS, a load balancer and a NAT gateway at
 $40–50+ before there are users. The image, settings and backups carry over unchanged when traffic
@@ -70,11 +74,24 @@ justifies moving to ECS and RDS, and the conditions for that move are written do
 
 `TypeScript` `Fastify` `PostgreSQL` `Expo` `Docker Compose` `Caddy` `Terraform` `AWS` `GitHub Actions`
 
-**Proven** (CI green on 2026-11-07): API lint, typecheck and tests, the Trivy image gate, an HTTPS smoke test
-and a backup-and-restore drill.
-**Not yet proven:** the hadolint and gitleaks jobs, the Terraform checks, the first `terraform apply` and the
-first deploy to AWS.
+**Proven** (CI green on 2026-11-08, on both `dev` and `main`): API lint, typecheck and 188 tests against a real
+PostgreSQL, hadolint, gitleaks, the Trivy image gate, an HTTPS smoke test, a database-encryption check and a
+backup-and-restore drill. In the separate Infrastructure workflow: `terraform fmt`, the module wiring check,
+`init` and `validate` for the bootstrap and dev environments, and TFLint all pass; Checkov runs report-only.
+**Not yet proven:** the first `terraform apply` and the first deploy to AWS, a backup upload to S3 and a restore
+from it, an HTTPS certificate for a real domain, and the app on real iOS and Android devices. Sign in with Google
+and Apple is tested only against locally signed test tokens, not the real providers.
 Source code is available on request for hiring processes.
+
+What CI caught on the way, rather than me:
+- A production check rejected 23.7% of valid random JWT secrets, so about one deploy in four would not have started.
+  It passed on my machine only because my secret happened to qualify. The fix was a looser rule and a test over
+  thousands of random secrets.
+- The image scan found 10 fixable HIGH vulnerabilities, all inside the `npm` bundled with Node. The fix was removing
+  the package managers from the final image, not suppressing the finding.
+- When `main` first received the whole history, gitleaks flagged a made-up string in a test (a sample secret used to
+  check that production accepts strong secrets). I added an ignore entry for that one finding, with the reason written
+  next to it, instead of switching the scan off.
 
 ---
 
