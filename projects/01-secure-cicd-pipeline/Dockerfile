@@ -2,7 +2,7 @@
 # Pin by tag here; Dependabot (docker ecosystem) proposes digest-pinned updates.
 
 # ---- Stage 1: prepare a minimal, cleaned runtime filesystem -------------------------------
-FROM python:3.13-slim AS prepare
+FROM python:3.15-slim AS prepare
 
 # Unprivileged user with a fixed UID so Kubernetes runAsUser/runAsNonRoot checks can be explicit.
 # The app is stdlib-only, so the package installers are removed: Trivy flagged fixable HIGH CVEs in
