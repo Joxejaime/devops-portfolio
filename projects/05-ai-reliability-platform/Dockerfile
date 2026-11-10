@@ -3,7 +3,7 @@
 # Dependabot/Renovate bump it.
 
 # ---- Stage 1: prepare a minimal, cleaned runtime filesystem -------------------------------
-FROM python:3.13-slim AS prepare
+FROM python:3.15-slim AS prepare
 
 # The gateway has zero third-party dependencies, so nothing needs installing and the package
 # installers can go: Trivy flags fixable HIGH CVEs in pip/setuptools and the libraries vendored
