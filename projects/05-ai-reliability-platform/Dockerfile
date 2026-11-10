@@ -9,6 +9,14 @@ FROM python:3.13-slim AS prepare
 # installers can go: Trivy flags fixable HIGH CVEs in pip/setuptools and the libraries vendored
 # inside them (urllib3, msgpack). ensurepip goes too, since its bundled pip wheel carries the same
 # libraries and Trivy scans inside wheels.
+# Debian security fixes land in the archive before the python:3.13-slim image is rebuilt. Trivy gates
+# on fixable HIGH CVEs, so upgrade the one library it flagged (zlib1g) instead of waiting for a new
+# base tag. Only that package is touched; apt lists are removed so no cache lands in the image.
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends --only-upgrade zlib1g \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN groupadd --system --gid 10001 app \
     && useradd --system --uid 10001 --gid app --no-create-home app \
     && python -m pip uninstall --yes pip setuptools wheel \
