@@ -1,8 +1,9 @@
 # 1 · Delivery platform
 
 **One service, `release-tracker`, followed from a commit to an on-call page.** It is built and signed by a
-pipeline that refuses to ship a vulnerable image, runs on a multi-AZ AWS platform deployed without stored
-cloud keys, reaches clusters only through reviewed pull requests, and is watched against error-budget SLOs.
+pipeline that refuses to ship a vulnerable image. It is designed for a multi-AZ AWS platform deployed without stored
+cloud keys (not yet applied), reaches clusters only through reviewed pull requests, and is watched against
+error-budget SLOs.
 
 Built from [01](../projects/01-secure-cicd-pipeline) · [02](../projects/02-aws-terraform-platform) ·
 [03](../projects/03-k8s-gitops) · [04](../projects/04-observability-slo)
@@ -41,6 +42,7 @@ All four workflows run on GitHub and pass.
 ## Not proven
 
 Terraform has never been applied to a real AWS account; there has been no Argo CD sync on a real cluster;
-Grafana has never rendered the dashboard; and `cosign verify` has not been run against the published image.
+Grafana has never rendered the dashboard; and `cosign verify` has not been run against the published image (signing itself is proven; the verify step lives in
+03's manual `promote` job, which has never run).
 [The portfolio guide](../projects/00-start-here/docs/PORTFOLIO-GUIDE.md) is the plan for converting each of
 those into evidence.

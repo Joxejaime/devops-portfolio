@@ -1,8 +1,10 @@
 # DevOps & Cloud portfolio — Jaime Castillo Araujo
 
-**Three projects covering the path from a commit to a service running in production, staying up under
-failure, and recovering with evidence.** Built as eight self-contained components, each with its own tests,
-docs, diagrams and CI pipeline — all eight run on GitHub Actions and pass.
+**Three projects covering the path from a commit to a deployed service, staying up under failure, and
+recovering with evidence.** Built as eight self-contained components, each with its own tests, docs, diagrams and
+CI pipeline. All eight run on GitHub Actions and the latest run of each passes; the one failure in their history is
+listed below. A real product, [Juega App](#4--applied-juega-app-private-product-deployed), runs live on AWS using
+several of them.
 
 `Terraform` `Kubernetes` `AWS` `GitHub Actions` `Docker` `Prometheus` `Argo CD` `Python`
 
@@ -11,7 +13,7 @@ docs, diagrams and CI pipeline — all eight run on GitHub Actions and pass.
 ## 1 · [Delivery platform](showcase/1-delivery-platform.md)
 
 One service followed from a commit to an on-call page. A pipeline that refuses to ship a vulnerable image,
-a multi-AZ AWS platform deployed without stored cloud keys, GitOps promotion by pull request, and error-budget
+a multi-AZ AWS platform designed to be deployed without stored cloud keys (not yet applied), GitOps promotion by pull request, and error-budget
 SLO alerting with runbooks.
 
 *The Trivy gate failed its first real run on four fixable HIGH CVEs in the base image — the fix was removing
@@ -203,22 +205,25 @@ Live status of all eight pipelines:
 
 | Pipeline | Runs | Passed | Typical duration |
 |---|---|---|---|
-| 01 Secure CI/CD | 3 | 2 | 1m 53s |
-| 02 AWS platform (Terraform) | 3 | 3 | 35s |
-| 03 Kubernetes GitOps | 3 | 3 | 24s |
-| 04 Observability | 1 | 1 | 12s |
-| 05 AI reliability | 3 | 3 | 1m 12s |
-| 06 Developer platform | 3 | 3 | 21s |
-| 07 SRE lab | 2 | 2 | 43s |
-| 08 DR autopilot | 1 | 1 | 1m 16s |
+| 01 Secure CI/CD | 9 | 8 | 2m 02s |
+| 02 AWS platform (Terraform) | 13 | 13 | 38s |
+| 03 Kubernetes GitOps | 6 | 6 | 23s |
+| 04 Observability | 5 | 5 | 14s |
+| 05 AI reliability | 9 | 9 | 1m 15s |
+| 06 Developer platform | 9 | 9 | 23s |
+| 07 SRE lab | 7 | 7 | 44s |
+| 08 DR autopilot | 10 | 10 | 1m 13s |
 
-Measured on 2026-10-26 from the GitHub Actions API: completed runs on `main`, duration from run start to last
-update, typical = median of the passing runs. Pipelines only run when their own folder changes, so each has few
-runs; the counts grow with every push. Nineteen runs, eighteen passed, and the one failure is in pipeline 01.
+Measured on 2026-11-11 from the GitHub Actions API: completed (passed or failed) runs on `main`, duration from run
+start to last update, typical = median of the passing runs. Cancelled runs are not counted. Pipelines only run when
+their own folder changes. Sixty-eight runs, sixty-seven passed, and the one failure is pipeline 01's first run on
+2026-10-26, the Trivy gate catching fixable HIGH findings (described in project 1). The latest run of every pipeline
+passes.
 
 **Not proven anywhere yet in these eight components:** applying their own Terraform to a real AWS account, an Argo CD
 sync on a real cluster, Grafana rendering the dashboard, the Docker Compose stacks, and `cosign verify` against the
-published image. The Terraform patterns from 02 have been applied for real in [Juega App](#4--applied-juega-app-private-product-deployed),
+published image. Signing is proven (the `publish` job of 01 passes on `main`); verification is wired into 03's
+`promote` job, which only runs when started by hand and has never been run. The Terraform patterns from 02 have been applied for real in [Juega App](#4--applied-juega-app-private-product-deployed),
 a separate product, which is where the OIDC deploy and the backup practices were exercised on AWS.
 [`projects/00-start-here/docs/PORTFOLIO-GUIDE.md`](projects/00-start-here/docs/PORTFOLIO-GUIDE.md) is the plan
 for turning each of those into evidence.
