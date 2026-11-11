@@ -51,7 +51,7 @@ Full walkthrough: [`docs/game-day.md`](docs/game-day.md).
 | GitHub Actions on the pull request: generated files up to date, `promtool` config/rules checks, rule unit tests, `amtool`, compose validation | **Run on GitHub: pass.** |
 | **End-to-end:** real Prometheus and Alertmanager binaries scraping the real app with injected 500s, alert fired and delivered to a webhook | Run once in the build environment, see `docs/evidence/e2e-run.md` |
 | The Docker Compose stack itself and the Grafana dashboard rendering | **Not run.** No Docker daemon in the build environment. The first `make up` is the real test; the dashboard JSON has never been rendered by Grafana. |
-| Reused in a real product (Juega App, private repository) | **Method only.** Two written SLOs, an error-budget policy and a route-labelled `/metrics` endpoint, checked in CI at the edge. The PromQL there has not been run against a live Prometheus, and no alert burns on it yet. |
+| Running live in a real product (Juega App, private repository) | **Method only, running.** Two written SLOs, an error-budget policy and a route-labelled `/metrics` endpoint, checked in CI at the edge. The PromQL there has not been run against a live Prometheus, and no alert burns on it yet. |
 
 ## Next improvements
 Long-term storage for a true 30-day budget panel; an external synthetic probe; tracing (OpenTelemetry);

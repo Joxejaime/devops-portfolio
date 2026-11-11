@@ -170,11 +170,12 @@ Nothing here is claimed unless it has been run. Each component README ends with 
 | [07](projects/07-sre-reliability-lab) SRE lab | Lint, SLO validation, 33 tests including live chaos experiments, promtool rule checks | GitHub Actions |
 | [08](projects/08-disaster-recovery-autopilot) DR autopilot | Lint, playbook validation, 85 pytest tests against a real PostgreSQL 16 server, three recovery drills with their postmortem drafts committed | GitHub Actions, local |
 
-### Used for real in Juega App
+### Running live in Juega App
 
 [Juega App](#4--applied-juega-app-private-product-deployed) is a deployed product that reuses these components.
-This is what each one contributed there, and what was not taken. It does not upgrade the checks above: the
-components themselves are unchanged, and Juega's versions are adapted copies in a private repository.
+These pieces run today on the instance I created and configured, and the checks behind them pass in that product's
+CI and deploy. That is evidence for the practices, not for the eight folders above, which are unchanged: Juega's
+versions are adapted copies in a private repository, and its deployed environment is `dev`.
 
 | Component | Used in Juega App | Not used there |
 |---|---|---|
