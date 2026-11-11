@@ -49,8 +49,9 @@ same rules audit any existing repository by rule ID.
 
 The same practices on a real product I run: **Juega App**, a free iOS, Android and web app that organizes
 pickup football matches: sign-ups, teams balanced from past ratings and results, teammate ratings, goals and
-own goals, and monthly and yearly stats that players can share as cards. It runs today as a dev environment on
-AWS, deployed by GitHub Actions on every push to `dev`. The source is in a private repository because the app is
+own goals, and monthly and yearly stats that players can share as cards. It is **live and running** on an AWS EC2
+instance that I created and configured myself, with Terraform adapted from component 02, and every push to `dev`
+is deployed to it by GitHub Actions. The environment is named `dev`; there is no separate production environment yet. The source is in a private repository because the app is
 headed to the App Store and Google Play; the architecture and the decisions are public here.
 
 ![Juega App architecture: clients reach Caddy, the API and PostgreSQL on one EC2 host; GitHub Actions pushes to ECR through OIDC and deploys over SSM; nightly backups go to S3](showcase/schematics/4-pickup-football.svg)
@@ -78,8 +79,8 @@ justifies moving to ECS and RDS, and the conditions for that move are written do
 
 **Proven** (CI green on `dev` on 2026-11-11): API lint, typecheck and 291 tests, mobile typecheck, lint and 169
 tests, hadolint, gitleaks, the Trivy image gate, a production-stack smoke test, a database-encryption check, and
-backup drills that refuse a damaged backup and broken live data. The Terraform has been applied to a real AWS
-account, and the deploy job has run end to end: image build and SBOM, push to ECR, deploy over SSM through the
+backup drills that refuse a damaged backup and broken live data. The Terraform has been applied to my AWS
+account, the instance is up and serving, and the deploy job has run end to end: image build and SBOM, push to ECR, deploy over SSM through the
 OIDC role, and an HTTPS smoke test against the running server that checks `/health`, the request ID header and
 that `/metrics` is not public. Infrastructure workflow: `terraform fmt`, wiring check, `validate` for the bootstrap
 and dev environments, TFLint pass, and a Checkov scan runs report-only.
