@@ -45,24 +45,26 @@ same rules audit any existing repository by rule ID.
 
 ---
 
-## 4 · Applied: Pickup Football (private product)
+## 4 · Applied: Juega App (private product, deployed)
 
-The same practices on a real product: a free iOS, Android and web app that organizes pickup football
-matches: sign-ups, teams balanced from past ratings and results, teammate ratings, goals and own goals,
-and monthly and yearly stats that players can share as cards. The source is in a private repository
-because the app is headed to the App Store and Google Play; the architecture and the decisions are
-public here.
+The same practices on a real product I run: **Juega App**, a free iOS, Android and web app that organizes
+pickup football matches: sign-ups, teams balanced from past ratings and results, teammate ratings, goals and
+own goals, and monthly and yearly stats that players can share as cards. It runs today as a dev environment on
+AWS, deployed by GitHub Actions on every push to `dev`. The source is in a private repository because the app is
+headed to the App Store and Google Play; the architecture and the decisions are public here.
 
-![Pickup Football architecture: clients reach Caddy, the API and PostgreSQL on one EC2 host; GitHub Actions pushes to ECR through OIDC and deploys over SSM; nightly backups go to S3](showcase/schematics/4-pickup-football.svg)
+![Juega App architecture: clients reach Caddy, the API and PostgreSQL on one EC2 host; GitHub Actions pushes to ECR through OIDC and deploys over SSM; nightly backups go to S3](showcase/schematics/4-pickup-football.svg)
 
 <sub>Diagram source: [`4-pickup-football.mmd`](showcase/schematics/4-pickup-football.mmd)</sub>
 
 | Area | What it uses |
 |---|---|
-| CI (adapted from [01](projects/01-secure-cicd-pipeline)) | Lint, typecheck, API tests against a real PostgreSQL, hadolint, gitleaks, Trivy gate on the image, SBOM |
-| Infrastructure (adapted from [02](projects/02-aws-terraform-platform)) | Terraform: the VPC module with NAT and flow logs made optional, one EC2 host, ECR, S3, Parameter Store, CloudWatch alarms |
-| Delivery | Deploy role trusts one branch of one repository; images pushed to ECR and started over SSM, no SSH |
-| Data safety | Database accepts encrypted connections only; nightly backups to S3 and a monthly restore rehearsal |
+| CI (adapted from [01](projects/01-secure-cicd-pipeline)) | Lint, typecheck, API and mobile tests (API against a real PostgreSQL), hadolint, gitleaks, Trivy gate on the image, SBOM, a production-stack smoke test |
+| Infrastructure (adapted from [02](projects/02-aws-terraform-platform)) | Terraform: the VPC module with NAT and flow logs made optional, one EC2 host (`t3.micro`), ECR, S3, Parameter Store, CloudWatch alarms; provider lock files committed |
+| Delivery | Deploy role trusts one branch of one repository, pinned to GitHub's immutable OIDC subject (repository ids, not just names); the image is pushed to ECR and started over SSM, no SSH, port 22 closed. The deploy job runs only after every other check passes and ends with an HTTPS smoke test |
+| Observability and SLOs (from [04](projects/04-observability-slo)) | A request ID on every response and in error bodies, Prometheus-format `/metrics` by route (answered with 404 from outside by Caddy), two written SLOs (99.5% availability, 95% of requests under 250 ms) with the PromQL to measure them and an error-budget policy |
+| Data safety (from [08](projects/08-disaster-recovery-autopilot)) | Database accepts encrypted connections only; each nightly backup is restored into a scratch database and checked when it is taken, and carries a SHA-256 and exact row counts; a backup of live data that fails its integrity checks is refused; `restore.sh` runs the drill before replacing anything |
+| Reliability practice (from [07](projects/07-sre-reliability-lab)) | Two game days with hypotheses and measured results: crashes, a memory leak and spoofed addresses, then damaged backups and broken live data. Runbooks per alarm, written recovery targets and a postmortem template |
 | Application security | Rotating refresh tokens with reuse detection, per-account login lockout, row locks so a roster never overfills |
 | Fair teams | A pure function splits players by position, then spreads the strongest of each position so both teams end level on average strength. Strength comes from received ratings (this group first, then everywhere, recent matches weighted a little more) nudged by recent results. Measured over 400 simulated groups (not real matches yet): average gap between teams 0.19 points, against 1.27 without it. The randomizer is optional and admins can still change teams by hand |
 | Sign-in with Google and Apple | The API checks the provider's signature, issuer, audience, expiry and nonce, and keeps only the provider's stable id. A provider login links to an existing account only when that account's email was confirmed, so registering someone's address first cannot take the account over. Accounts without a password confirm deletion with the provider |
@@ -72,18 +74,22 @@ public here.
 $40–50+ before there are users. The image, settings and backups carry over unchanged when traffic
 justifies moving to ECS and RDS, and the conditions for that move are written down in advance.*
 
-`TypeScript` `Fastify` `PostgreSQL` `Expo` `Docker Compose` `Caddy` `Terraform` `AWS` `GitHub Actions`
+`TypeScript` `Fastify` `PostgreSQL` `Expo` `Docker Compose` `Caddy` `Terraform` `AWS` `GitHub Actions` `SLOs`
 
-**Proven** (CI green on 2026-11-08, on both `dev` and `main`): API lint, typecheck and 188 tests against a real
-PostgreSQL, hadolint, gitleaks, the Trivy image gate, an HTTPS smoke test, a database-encryption check and a
-backup-and-restore drill. In the separate Infrastructure workflow: `terraform fmt`, the module wiring check,
-`init` and `validate` for the bootstrap and dev environments, and TFLint all pass; Checkov runs report-only.
-**Not yet proven:** the first `terraform apply` and the first deploy to AWS, a backup upload to S3 and a restore
-from it, an HTTPS certificate for a real domain, and the app on real iOS and Android devices. Sign in with Google
-and Apple is tested only against locally signed test tokens, not the real providers.
-Source code is available on request for hiring processes.
+**Proven** (CI green on `dev` on 2026-11-11): API lint, typecheck and 291 tests, mobile typecheck, lint and 169
+tests, hadolint, gitleaks, the Trivy image gate, a production-stack smoke test, a database-encryption check, and
+backup drills that refuse a damaged backup and broken live data. The Terraform has been applied to a real AWS
+account, and the deploy job has run end to end: image build and SBOM, push to ECR, deploy over SSM through the
+OIDC role, and an HTTPS smoke test against the running server that checks `/health`, the request ID header and
+that `/metrics` is not public. Infrastructure workflow: `terraform fmt`, wiring check, `validate` for the bootstrap
+and dev environments, TFLint pass, and a Checkov scan runs report-only.
+**Not yet proven:** a restore on the AWS server from its S3 copy, an alarm on a failed nightly backup, the load
+test and failure drills repeated on the real server (they ran on a development PC), an external uptime probe and
+burn-rate alerts (so an outage between deploys is noticed by a person, not an alert), a production environment,
+and the app on real iOS and Android devices. Sign in with Google and Apple is tested only against locally signed
+test tokens, not the real providers. Source code is available on request for hiring processes.
 
-What CI caught on the way, rather than me:
+What CI and the first real deploy caught, rather than me:
 - A production check rejected 23.7% of valid random JWT secrets, so about one deploy in four would not have started.
   It passed on my machine only because my secret happened to qualify. The fix was a looser rule and a test over
   thousands of random secrets.
@@ -92,6 +98,14 @@ What CI caught on the way, rather than me:
 - When `main` first received the whole history, gitleaks flagged a made-up string in a test (a sample secret used to
   check that production accepts strong secrets). I added an ignore entry for that one finding, with the reason written
   next to it, instead of switching the scan off.
+- The first `terraform apply` failed on two things a `validate` never sees: a `for_each` whose keys depended on the
+  Elastic IP and so were unknown until apply, and an apostrophe AWS rejects in a security-group rule description.
+- The first deploy was refused by the AWS role: GitHub sends the repository's numeric id in the OIDC subject, so the
+  trust policy written from the repository name did not match. The role now trusts that immutable form, which a
+  renamed or re-created repository cannot reuse.
+- The backup drill compared a restored backup with the live database, which changes whenever anyone uses the app, so a
+  backup that restored but held wrong data would have passed. It now compares against exact counts recorded when the
+  backup was taken.
 
 ---
 
@@ -183,8 +197,10 @@ Measured on 2026-10-26 from the GitHub Actions API: completed runs on `main`, du
 update, typical = median of the passing runs. Pipelines only run when their own folder changes, so each has few
 runs; the counts grow with every push. Nineteen runs, eighteen passed, and the one failure is in pipeline 01.
 
-**Not proven anywhere yet:** applying any Terraform to a real AWS account, an Argo CD sync on a real cluster,
-Grafana rendering the dashboard, the Docker Compose stacks, and `cosign verify` against the published image.
+**Not proven anywhere yet in these eight components:** applying their own Terraform to a real AWS account, an Argo CD
+sync on a real cluster, Grafana rendering the dashboard, the Docker Compose stacks, and `cosign verify` against the
+published image. The Terraform patterns from 02 have been applied for real in [Juega App](#4--applied-juega-app-private-product-deployed),
+a separate product, which is where the OIDC deploy and the backup practices were exercised on AWS.
 [`projects/00-start-here/docs/PORTFOLIO-GUIDE.md`](projects/00-start-here/docs/PORTFOLIO-GUIDE.md) is the plan
 for turning each of those into evidence.
 
