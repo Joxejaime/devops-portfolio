@@ -157,7 +157,7 @@ backup into a scratch database, checks it, and writes a manifest with a checksum
 back up live data that fails its integrity checks, and `restore.sh` runs a drill before replacing anything. The first
 scheduled run on the instance is due 2026-11-12, so no live run has been verified yet. What is proven today is in CI,
 on every push: a damaged backup is refused and broken live data is not backed up. There are also runbooks per alarm, written RPO and RTO, and a
-postmortem template. Not yet done: a verified nightly run on the instance, a drill from the S3 copy, and an alarm when the nightly job fails.
+postmortem template. Done on the instance on 2026-11-11: a drill from the S3 copy (passed) and an alarm when no verified backup reaches S3 for 26 hours. Not yet done: a verified scheduled nightly run (the first is due 2026-11-12).
 `drpilot` itself is not deployed there, and no real incident has occurred, so there is still no postmortem written
 from one.
 
