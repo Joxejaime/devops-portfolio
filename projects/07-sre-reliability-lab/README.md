@@ -91,6 +91,13 @@ a "recovery time" that was really the window length) and the follow-ups still op
 | Simulator and budget maths covered by tests and exercised from the CLI | `docker compose up` (no Docker daemon was available); only `docker compose config` was run |
 | Config checks: rule file structure, dashboard JSON, compose file | Grafana rendering with real data |
 
+**Running live in a real product.** The game-day method (hypothesis, injection, observation, verdict, follow-ups) is
+how Juega App's reliability work is done and recorded: two game days covering container crashes, a memory runaway,
+spoofed client addresses and a login load burst, then damaged backups and broken live data. A finding became running
+infrastructure: the login-burst game day led to a CloudWatch alarm on low CPU credits, created by Terraform on the
+live instance. The experiments themselves ran on a development PC under Docker Desktop, not on the AWS server, and
+the runner and simulator code from this project were not used there.
+
 ## Limitations and next steps
 One service, two fault types, single runs on one machine, and no real traffic mix. Next: a 15-minute run with
 Prometheus up to watch a page arrive in Alertmanager, a downstream-dependency timeout scenario, a saturation scenario,
