@@ -91,6 +91,11 @@ a "recovery time" that was really the window length) and the follow-ups still op
 | Simulator and budget maths covered by tests and exercised from the CLI | `docker compose up` (no Docker daemon was available); only `docker compose config` was run |
 | Config checks: rule file structure, dashboard JSON, compose file | Grafana rendering with real data |
 
+**Used in a real product.** The game-day format (hypothesis, injection, observation, verdict, follow-ups) was reused in
+Juega App's operations docs for two game days: container crashes, a memory runaway, spoofed client addresses and a login
+load burst, then damaged backups and broken live data. They ran on a development PC under Docker Desktop, not on the
+AWS server, and the runner and simulator code from this project were not used there.
+
 ## Limitations and next steps
 One service, two fault types, single runs on one machine, and no real traffic mix. Next: a 15-minute run with
 Prometheus up to watch a page arrive in Alertmanager, a downstream-dependency timeout scenario, a saturation scenario,

@@ -151,6 +151,12 @@ is what the RPO check reads.
 | `drpilot serve` rejects unauthenticated webhooks and answers bad input with 400 (tests) | **Prometheus and Alertmanager:** CI syntax-checks the alert rules with `promtool check rules`; the Alertmanager snippet is checked structurally by merging it into 04's real file, and neither has run in a live Alertmanager |
 | Alert rules, playbooks and runbooks agree with each other and with 04's rule files (a test) | **Real incidents:** none exist, so no draft here describes one |
 
+**Ideas reused in a real product.** Juega App (private repository) took the approach, not this code: every backup is
+restored into a scratch database and checked when it is taken, carries a checksum and exact row counts, is refused if
+the live data fails its integrity checks, and a restore drill runs before any real restore. It also has runbooks per
+alarm, written RPO and RTO, and a postmortem template. `drpilot` itself is not deployed there, and no real incident
+has occurred, so there is still no postmortem written from one.
+
 ## Limitations and next steps
 
 - One responder with a JSON-file store, one process: a real deployment needs a single leader or a shared store.

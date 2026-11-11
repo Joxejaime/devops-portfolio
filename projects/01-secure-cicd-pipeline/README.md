@@ -56,6 +56,7 @@ API: `GET /healthz`, `GET /readyz`, `GET /metrics`, `GET|POST /api/deployments`.
 | hadolint, actionlint on the workflow | Run: clean |
 | GitHub Actions on the pull request: lint and test, hadolint, gitleaks, `docker build`, container smoke test (`/healthz`, `/metrics`), Trivy HIGH/CRITICAL gate, SBOM artifact | **Run on GitHub: pass.** Trivy first failed the build on fixable HIGH CVEs (see below); the fix is in the Dockerfile. |
 | GHCR push by digest, cosign keyless signing, build provenance attestation (`publish` job on `main`) | **Run on GitHub: pass.** The first attempt failed at signing: `github.repository_owner` keeps its capitals, and registry references must be lowercase, so cosign could not parse the image reference. The image name is now lowercased in the job. I have not yet run `cosign verify` against the published image myself. |
+| Reused in a real product (Juega App, private repository) | **Adapted, not copied.** The same gate order (hadolint, gitleaks, Trivy, SBOM, then deploy) runs in CI there and passes on every push to `dev`; the finding and fix described below were repeated for a Node image. cosign signing and provenance were not carried over. |
 
 ### What the scan caught
 The first real pipeline run failed the Trivy gate: four fixable HIGH findings (`urllib3`, `msgpack`, `setuptools`) that

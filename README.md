@@ -169,6 +169,23 @@ Nothing here is claimed unless it has been run. Each component README ends with 
 | [07](projects/07-sre-reliability-lab) SRE lab | Lint, SLO validation, 33 tests including live chaos experiments, promtool rule checks | GitHub Actions |
 | [08](projects/08-disaster-recovery-autopilot) DR autopilot | Lint, playbook validation, 85 pytest tests against a real PostgreSQL 16 server, three recovery drills with their postmortem drafts committed | GitHub Actions, local |
 
+### Used for real in Juega App
+
+[Juega App](#4--applied-juega-app-private-product-deployed) is a deployed product that reuses these components.
+This is what each one contributed there, and what was not taken. It does not upgrade the checks above: the
+components themselves are unchanged, and Juega's versions are adapted copies in a private repository.
+
+| Component | Used in Juega App | Not used there |
+|---|---|---|
+| [01](projects/01-secure-cicd-pipeline) Secure CI/CD | Same gate structure: hadolint, gitleaks, Trivy at HIGH/CRITICAL, SBOM, and a deploy job that waits for every other check. The "remove the package managers from the image" fix was reused after Trivy found 10 HIGH findings inside the bundled `npm` | cosign signing, provenance, publishing by digest |
+| [02](projects/02-aws-terraform-platform) AWS platform | The VPC module (with NAT and flow logs made optional), the state bucket and OIDC provider bootstrap, the OIDC deploy role with no stored keys, TFLint and Checkov. **Applied to a real AWS account** and deployed through | The ECS service module, multi-AZ layout, production environment |
+| [03](projects/03-k8s-gitops) Kubernetes GitOps | Nothing | Everything: Juega App runs on one host with Docker Compose |
+| [04](projects/04-observability-slo) Observability | The SLO method: two written objectives, error-budget policy, request metrics by route, with the PromQL to measure them | The Prometheus, Alertmanager and Grafana stack; the PromQL has never run against a live Prometheus, so nothing alerts on burn rate |
+| [05](projects/05-ai-reliability-platform) AI reliability | Nothing | Everything |
+| [06](projects/06-self-service-platform) Developer platform | Nothing | Everything |
+| [07](projects/07-sre-reliability-lab) SRE lab | The game-day format (hypothesis, injection, observation, verdict, follow-ups). Two game days run: crashes, memory runaway, spoofed addresses, load, then damaged backups and broken live data | The chaos runner and simulator code; both game days ran on a development PC, not on AWS |
+| [08](projects/08-disaster-recovery-autopilot) DR autopilot | The ideas, rewritten as shell scripts: restore every backup into a scratch database, verify checksum and row counts, refuse suspect data, a restore drill before any real restore. Also runbooks per alarm, RPO/RTO, a postmortem template | The `drpilot` service itself; no real incident has happened, so no postmortem has been written from one |
+
 Live status of all eight pipelines:
 
 [![01](https://github.com/Joxejaime/devops-portfolio/actions/workflows/01-secure-cicd.yml/badge.svg?branch=main)](https://github.com/Joxejaime/devops-portfolio/actions/workflows/01-secure-cicd.yml)
