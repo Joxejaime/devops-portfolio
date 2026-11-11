@@ -49,12 +49,14 @@ same rules audit any existing repository by rule ID.
 
 ## 4 · Applied: Juega App (private product, deployed)
 
-The same practices on a real product I run: **Juega App**, a free iOS, Android and web app that organizes
+The same practices on a real product I co-founded: **Juega App**, a free iOS, Android and web app that organizes
 pickup football matches: sign-ups, teams balanced from past ratings and results, teammate ratings, goals and
 own goals, and monthly and yearly stats that players can share as cards. It is **live and running** on an AWS EC2
 instance that I created and configured myself, with Terraform adapted from component 02, and every push to `dev`
-is deployed to it by GitHub Actions. `dev` is the branch and environment that is deployed today; `main` is the production branch, and CI runs on both. The source is in a private repository because the app is
-headed to the App Store and Google Play; the architecture and the decisions are public here.
+is deployed to it by GitHub Actions. Test users are using it now (a closed test, not a public release).
+`dev` is the branch and environment that is deployed today; `main` is the production branch, and CI runs on both.
+I own development and operations; my partner owns marketing and sales. The source is in a private repository because
+the app is headed to the App Store and Google Play; the architecture and the decisions are public here.
 
 ![Juega App architecture: clients reach Caddy, the API and PostgreSQL on one EC2 host; GitHub Actions pushes to ECR through OIDC and deploys over SSM; nightly backups go to S3](showcase/schematics/4-pickup-football.svg)
 
@@ -86,7 +88,7 @@ account, the instance is up and serving, and the deploy job has run end to end: 
 OIDC role, and an HTTPS smoke test against the running server that checks `/health`, the request ID header and
 that `/metrics` is not public. Infrastructure workflow: `terraform fmt`, wiring check, `validate` for the bootstrap
 and dev environments, TFLint pass, and a Checkov scan runs report-only.
-**Not yet proven:** a verified nightly backup run on the server (the first is due 2026-11-12), a restore on the AWS server from its S3 copy, an alarm on a failed nightly backup, the load
+**Not yet proven:** real-user numbers (requests, error rate, latency and uptime from the test users; none are published yet), a verified nightly backup run on the server (the first is due 2026-11-12), a restore on the AWS server from its S3 copy, an alarm on a failed nightly backup, the load
 test and failure drills repeated on the real server (they ran on a development PC), an external uptime probe and
 burn-rate alerts (so an outage between deploys is noticed by a person, not an alert), an automated deploy
 from `main` (the repository has a deploy job and Terraform environment only for `dev`), and the app on real iOS and Android devices. Sign in with Google and Apple is tested only against locally signed
