@@ -151,12 +151,13 @@ is what the RPO check reads.
 | `drpilot serve` rejects unauthenticated webhooks and answers bad input with 400 (tests) | **Prometheus and Alertmanager:** CI syntax-checks the alert rules with `promtool check rules`; the Alertmanager snippet is checked structurally by merging it into 04's real file, and neither has run in a live Alertmanager |
 | Alert rules, playbooks and runbooks agree with each other and with 04's rule files (a test) | **Real incidents:** none exist, so no draft here describes one |
 
-**Running live in a real product.** Juega App (private repository) took the approach, not this code, and it runs: a
-nightly cron job on the live instance backs up the database, restores each backup into a scratch database, checks it,
-and writes a manifest with a checksum and exact row counts; it refuses to back up live data that fails its integrity
-checks, and `restore.sh` runs a drill before replacing anything. CI proves on every push that a damaged backup is
-refused and that broken live data is not backed up. There are also runbooks per alarm, written RPO and RTO, and a
-postmortem template. Not yet done: a drill on the instance from the S3 copy, and an alarm when the nightly job fails.
+**Deployed in a real product, first live run pending.** Juega App (private repository) took the approach, not this
+code. The nightly job is installed on the live instance by cron (03:15 UTC): it backs up the database, restores each
+backup into a scratch database, checks it, and writes a manifest with a checksum and exact row counts; it refuses to
+back up live data that fails its integrity checks, and `restore.sh` runs a drill before replacing anything. The first
+scheduled run on the instance is due 2026-11-12, so no live run has been verified yet. What is proven today is in CI,
+on every push: a damaged backup is refused and broken live data is not backed up. There are also runbooks per alarm, written RPO and RTO, and a
+postmortem template. Not yet done: a verified nightly run on the instance, a drill from the S3 copy, and an alarm when the nightly job fails.
 `drpilot` itself is not deployed there, and no real incident has occurred, so there is still no postmortem written
 from one.
 

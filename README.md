@@ -84,7 +84,7 @@ account, the instance is up and serving, and the deploy job has run end to end: 
 OIDC role, and an HTTPS smoke test against the running server that checks `/health`, the request ID header and
 that `/metrics` is not public. Infrastructure workflow: `terraform fmt`, wiring check, `validate` for the bootstrap
 and dev environments, TFLint pass, and a Checkov scan runs report-only.
-**Not yet proven:** a restore on the AWS server from its S3 copy, an alarm on a failed nightly backup, the load
+**Not yet proven:** a verified nightly backup run on the server (the first is due 2026-11-12), a restore on the AWS server from its S3 copy, an alarm on a failed nightly backup, the load
 test and failure drills repeated on the real server (they ran on a development PC), an external uptime probe and
 burn-rate alerts (so an outage between deploys is noticed by a person, not an alert), an automated deploy
 from `main` (the repository has a deploy job and Terraform environment only for `dev`), and the app on real iOS and Android devices. Sign in with Google and Apple is tested only against locally signed
@@ -186,7 +186,7 @@ versions are adapted copies in a private repository, and its deployed environmen
 | [05](projects/05-ai-reliability-platform) AI reliability | Nothing | Everything |
 | [06](projects/06-self-service-platform) Developer platform | Nothing | Everything |
 | [07](projects/07-sre-reliability-lab) SRE lab | The game-day method (hypothesis, injection, observation, verdict, follow-ups). Two game days run: crashes, memory runaway, spoofed addresses, load, then damaged backups and broken live data. One finding is live: a CloudWatch low-CPU-credits alarm on the instance | The chaos runner and simulator code; both game days ran on a development PC, not on AWS |
-| [08](projects/08-disaster-recovery-autopilot) DR autopilot | The ideas, rewritten as shell scripts and **running nightly on the instance**: restore every backup into a scratch database, verify checksum and row counts, refuse suspect data, a restore drill before any real restore; CI proves the refusals on every push. Also runbooks per alarm, RPO/RTO, a postmortem template | The `drpilot` service itself; a drill from the S3 copy on the server; no real incident has happened, so no postmortem has been written from one |
+| [08](projects/08-disaster-recovery-autopilot) DR autopilot | The ideas, rewritten as shell scripts and **deployed on the instance** (first scheduled nightly run due 2026-11-12, so not yet verified live): restore every backup into a scratch database, verify checksum and row counts, refuse suspect data, a restore drill before any real restore; CI proves the refusals on every push. Also runbooks per alarm, RPO/RTO, a postmortem template | The `drpilot` service itself; a drill from the S3 copy on the server; no real incident has happened, so no postmortem has been written from one |
 
 Live status of all eight pipelines:
 
