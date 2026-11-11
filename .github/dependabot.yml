@@ -1,8 +1,9 @@
 version: 2
+# Updates go to main as pull requests; CI on the pull request is the gate. Major versions are planned
+# upgrades, not bot pull requests, so few update branches exist at once.
 updates:
   - package-ecosystem: github-actions
     directory: /
-    target-branch: staging
     schedule:
       interval: weekly
     groups:
@@ -11,14 +12,20 @@ updates:
       actions:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: docker
     directory: /projects/01-secure-cicd-pipeline
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: terraform
     directory: /projects/02-aws-terraform-platform/envs/dev
-    target-branch: staging
     schedule:
       interval: weekly
     ignore:
@@ -27,7 +34,6 @@ updates:
         update-types: ["version-update:semver-major"]
   - package-ecosystem: terraform
     directory: /projects/02-aws-terraform-platform/envs/prod
-    target-branch: staging
     schedule:
       interval: weekly
     ignore:
@@ -36,66 +42,104 @@ updates:
         update-types: ["version-update:semver-major"]
   - package-ecosystem: docker
     directory: /projects/05-ai-reliability-platform
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: terraform
     directory: /projects/05-ai-reliability-platform/terraform
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: terraform
     directory: /projects/06-self-service-platform/terraform/modules/service-environment
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: pip
     directory: /projects/07-sre-reliability-lab
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: pip
     directory: /projects/06-self-service-platform
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: pip
     directory: /projects/08-disaster-recovery-autopilot
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: terraform
     directory: /projects/08-disaster-recovery-autopilot/infra/backup-bucket
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: docker
     directory: /projects/07-sre-reliability-lab/demo
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: docker
     directory: /projects/06-self-service-platform/examples/generated/orders-api
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: terraform
     directory: /projects/02-aws-terraform-platform/bootstrap
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: terraform
     directory: /projects/02-aws-terraform-platform/modules/network
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: terraform
     directory: /projects/02-aws-terraform-platform/modules/ecs-service
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
   - package-ecosystem: terraform
     directory: /projects/06-self-service-platform/infra/services
-    target-branch: staging
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
