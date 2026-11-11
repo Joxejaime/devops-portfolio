@@ -88,10 +88,13 @@ account, the instance is up and serving, and the deploy job has run end to end: 
 OIDC role, and an HTTPS smoke test against the running server that checks `/health`, the request ID header and
 that `/metrics` is not public. Infrastructure workflow: `terraform fmt`, wiring check, `validate` for the bootstrap
 and dev environments, TFLint pass, and a Checkov scan runs report-only.
-**Not yet proven:** real-user numbers (requests, error rate, latency and uptime from the test users; none are published yet), a verified nightly backup run on the server (the first is due 2026-11-12), a restore on the AWS server from its S3 copy, an alarm on a failed nightly backup, the load
-test and failure drills repeated on the real server (they ran on a development PC), an external uptime probe and
-burn-rate alerts (so an outage between deploys is noticed by a person, not an alert), an automated deploy
-from `main` (the repository has a deploy job and Terraform environment only for `dev`), and the app on real iOS and Android devices. Sign in with Google and Apple is tested only against locally signed
+**Written and reviewed, not yet applied in AWS:** an uptime probe (a Route 53 health check on `/health` with an alarm),
+an alarm when no verified backup has reached S3 for 26 hours, a monthly restore drill that downloads the newest S3
+backup and runs the full check on it, and a separate production environment deployed from `main`. Production needs a
+domain, its own Terraform apply and five Actions variables, and its deploy job stays skipped until they exist.
+**Not yet proven:** real-user numbers (requests, error rate, latency and uptime from the test users; none are published
+yet), a verified nightly backup run on the server (the first is due 2026-11-12), the load test and failure drills
+repeated on the real server (they ran on a development PC), burn-rate alerts, and the app on real iOS and Android devices. Sign in with Google and Apple is tested only against locally signed
 test tokens, not the real providers. Source code is available on request for hiring processes.
 
 What CI and the first real deploy caught, rather than me:
