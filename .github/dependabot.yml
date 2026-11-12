@@ -29,6 +29,9 @@ updates:
     schedule:
       interval: weekly
     ignore:
+      # Version ranges like "~> 5.60" -> "~> 6.72" are not seen as majors; AWS provider 6 is a planned migration.
+      - dependency-name: "hashicorp/aws"
+        versions: [">= 6.0.0"]
       # The v6 bump failed this project's CI checks. Move to 6.x as a deliberate migration, not a bot PR.
       - dependency-name: "hashicorp/aws"
         update-types: ["version-update:semver-major"]
@@ -37,6 +40,9 @@ updates:
     schedule:
       interval: weekly
     ignore:
+      # Version ranges like "~> 5.60" -> "~> 6.72" are not seen as majors; AWS provider 6 is a planned migration.
+      - dependency-name: "hashicorp/aws"
+        versions: [">= 6.0.0"]
       # The v6 bump failed this project's CI checks. Move to 6.x as a deliberate migration, not a bot PR.
       - dependency-name: "hashicorp/aws"
         update-types: ["version-update:semver-major"]
@@ -53,6 +59,9 @@ updates:
     schedule:
       interval: weekly
     ignore:
+      # Version ranges like "~> 5.60" -> "~> 6.72" are not seen as majors; AWS provider 6 is a planned migration.
+      - dependency-name: "hashicorp/aws"
+        versions: [">= 6.0.0"]
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
@@ -61,6 +70,9 @@ updates:
     schedule:
       interval: weekly
     ignore:
+      # Version ranges like "~> 5.60" -> "~> 6.72" are not seen as majors; AWS provider 6 is a planned migration.
+      - dependency-name: "hashicorp/aws"
+        versions: [">= 6.0.0"]
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
@@ -93,6 +105,9 @@ updates:
     schedule:
       interval: weekly
     ignore:
+      # Version ranges like "~> 5.60" -> "~> 6.72" are not seen as majors; AWS provider 6 is a planned migration.
+      - dependency-name: "hashicorp/aws"
+        versions: [">= 6.0.0"]
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
@@ -117,6 +132,9 @@ updates:
     schedule:
       interval: weekly
     ignore:
+      # Version ranges like "~> 5.60" -> "~> 6.72" are not seen as majors; AWS provider 6 is a planned migration.
+      - dependency-name: "hashicorp/aws"
+        versions: [">= 6.0.0"]
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
@@ -125,6 +143,9 @@ updates:
     schedule:
       interval: weekly
     ignore:
+      # Version ranges like "~> 5.60" -> "~> 6.72" are not seen as majors; AWS provider 6 is a planned migration.
+      - dependency-name: "hashicorp/aws"
+        versions: [">= 6.0.0"]
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
@@ -133,6 +154,9 @@ updates:
     schedule:
       interval: weekly
     ignore:
+      # Version ranges like "~> 5.60" -> "~> 6.72" are not seen as majors; AWS provider 6 is a planned migration.
+      - dependency-name: "hashicorp/aws"
+        versions: [">= 6.0.0"]
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
@@ -141,5 +165,8 @@ updates:
     schedule:
       interval: weekly
     ignore:
+      # Version ranges like "~> 5.60" -> "~> 6.72" are not seen as majors; AWS provider 6 is a planned migration.
+      - dependency-name: "hashicorp/aws"
+        versions: [">= 6.0.0"]
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
