@@ -37,7 +37,7 @@ flowchart LR
 Requires Python 3.11+ (no third-party packages) and, for the full stack, Docker.
 
 ```bash
-make test        # 40 tests, about 1 second
+make test        # 46 tests, about 4 seconds
 make run         # gateway on :8080 with admin routes enabled (lab token)
 
 curl -s localhost:8080/v1/chat -H 'X-Tenant: demo' -H 'Content-Type: application/json' \
@@ -65,7 +65,7 @@ demonstration of behaviour, not a capacity benchmark.
 
 | Verified (run in the build environment) | Not verified (written carefully, needs a run) |
 |---|---|
-| All 40 unit and end-to-end tests pass | `terraform apply`: never run against an AWS account (CI runs `fmt`, `init -backend=false` and `validate`, which check syntax and provider schemas, not real behaviour) |
+| All 46 unit and end-to-end tests pass | `terraform apply`: never run against an AWS account (CI runs `fmt`, `init -backend=false` and `validate`, which check syntax and provider schemas, not real behaviour) |
 | Live gateway driven through the incident drill; the image is built and scanned for HIGH/CRITICAL on every CI run | `docker compose up`: the stack has never been started, only `docker compose config` |
 | Rule files, dashboard JSON and k8s hardening checks (`scripts/validate_configs.py`) | Prometheus rule evaluation and Grafana rendering with real data |
 | `docker compose config` parses the compose file | Kubernetes manifests applied to a cluster |
