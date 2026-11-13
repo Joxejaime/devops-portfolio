@@ -151,12 +151,12 @@ is what the RPO check reads.
 | `drpilot serve` rejects unauthenticated webhooks and answers bad input with 400 (tests) | **Prometheus and Alertmanager:** CI syntax-checks the alert rules with `promtool check rules`; the Alertmanager snippet is checked structurally by merging it into 04's real file, and neither has run in a live Alertmanager |
 | Alert rules, playbooks and runbooks agree with each other and with 04's rule files (a test) | **Real incidents:** none exist, so no draft here describes one |
 
-**Deployed in a real product, first live result not yet recorded.** Juega App (private repository) took the approach, not this
+**Deployed in a real product and running.** Juega App (private repository) took the approach, not this
 code. The nightly job is installed on the live instance by cron (03:15 UTC): it backs up the database, restores each
 backup into a scratch database, checks it, and writes a manifest with a checksum and exact row counts; it refuses to
-back up live data that fails its integrity checks, and `restore.sh` runs a drill before replacing anything. Scheduled runs on the instance start on 2026-11-12; no live result is recorded here yet. What is proven today is in CI,
+back up live data that fails its integrity checks, and `restore.sh` runs a drill before replacing anything. The scheduled runs on the instance on 2026-11-12 and 2026-11-13 (03:15 UTC) each wrote a dump and a manifest to S3 with its checks passed and reported the backup metric. What is proven today is in CI,
 on every push: a damaged backup is refused and broken live data is not backed up. There are also runbooks per alarm, written RPO and RTO, and a
-postmortem template. Done on the instance on 2026-11-11: a drill from the S3 copy (passed) and an alarm when no verified backup reaches S3 for 26 hours. Not yet recorded: the result of a scheduled nightly run (scheduled from 2026-11-12).
+postmortem template. Done on the instance on 2026-11-11: a drill from the S3 copy (passed) and an alarm when no verified backup reaches S3 for 26 hours. Not yet done: a timed rebuild of the server from the S3 copy.
 `drpilot` itself is not deployed there, and no real incident has occurred, so there is still no postmortem written
 from one.
 

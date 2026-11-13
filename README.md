@@ -92,12 +92,12 @@ OIDC role, and an HTTPS smoke test against the running server that checks `/heal
 that `/metrics` is not public. Infrastructure workflow: `terraform fmt`, wiring check, `validate` for the bootstrap,
 dev and prod environments, TFLint pass, and Checkov with 0 failed checks (each skip carries a written reason).
 Terraform shows no drift between the code and AWS.
-**Running on AWS** (verified 2026-11-11): a restore drill that downloads the newest backup from S3 and checks it
+**Running on AWS** (verified on the account on 2026-11-11 and 2026-11-13): scheduled nightly backups (03:15 UTC) that ran on 2026-11-12 and 2026-11-13, each with a manifest recording its SHA-256, exact row counts and passed data checks, and each reporting the backup metric; a restore drill that downloads the newest backup from S3 and checks it
 (15 tables, row counts matching the manifest); an alarm when no verified backup reaches S3 for 26 hours; a Route 53
 HTTPS health check on `/health` from 16 locations; CloudWatch alarms for host and OS failure and low CPU credits;
-and alarm, budget and cost-anomaly emails.
+and a $20 monthly budget (alerts at 85% and 100% of actual and 100% of forecast spend) with a daily cost-anomaly subscription, both applied from Terraform.
 **Not yet proven:** real-user numbers (requests, error rate, latency and uptime from the test users; none are published yet),
-a scheduled nightly backup run on the server (scheduled from 2026-11-12; its result is not yet recorded here), an alert when the site goes down (the
+an alert when the site goes down (the
 health check runs, but its alarm must live in us-east-1, which my organization's region policy blocks), the load
 test and failure drills repeated on the real server (they ran on a development PC), burn-rate alerts, a deploy from
 `main` (its production environment is written in Terraform but not applied, so the job stays skipped), and the app on
@@ -203,7 +203,7 @@ versions are adapted copies in a private repository, and its deployed environmen
 | [05](projects/05-ai-reliability-platform) AI reliability | Nothing | Everything |
 | [06](projects/06-self-service-platform) Developer platform | Nothing | Everything |
 | [07](projects/07-sre-reliability-lab) SRE lab | The game-day method (hypothesis, injection, observation, verdict, follow-ups). Two game days run: crashes, memory runaway, spoofed addresses, load, then damaged backups and broken live data. One finding is live: a CloudWatch low-CPU-credits alarm on the instance | The chaos runner and simulator code; both game days ran on a development PC, not on AWS |
-| [08](projects/08-disaster-recovery-autopilot) DR autopilot | The ideas, rewritten as shell scripts and **deployed on the instance** (nightly runs scheduled from 2026-11-12; the first live result is not yet recorded here): restore every backup into a scratch database, verify checksum and row counts, refuse suspect data, a restore drill before any real restore; CI proves the refusals on every push. A drill from the S3 copy has passed on the server, and an alarm fires if no verified backup reaches S3 for 26 hours. Also runbooks per alarm, RPO/RTO, a postmortem template | The `drpilot` service itself; no real incident has happened, so no postmortem has been written from one |
+| [08](projects/08-disaster-recovery-autopilot) DR autopilot | The ideas, rewritten as shell scripts and **deployed on the instance** (the nightly runs on 2026-11-12 and 2026-11-13 wrote verified dumps and manifests to S3): restore every backup into a scratch database, verify checksum and row counts, refuse suspect data, a restore drill before any real restore; CI proves the refusals on every push. A drill from the S3 copy has passed on the server, and an alarm fires if no verified backup reaches S3 for 26 hours. Also runbooks per alarm, RPO/RTO, a postmortem template | The `drpilot` service itself; no real incident has happened, so no postmortem has been written from one |
 
 Live status of all eight pipelines:
 
