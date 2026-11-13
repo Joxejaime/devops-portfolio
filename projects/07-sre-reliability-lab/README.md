@@ -40,7 +40,7 @@ Python 3.11+ and PyYAML. Docker is only needed for the full Prometheus/Alertmana
 
 ```bash
 pip install -r requirements.txt
-make test            # 33 tests (about 30 s: they run real chaos experiments)
+make test            # 34 tests (about 30 s: they run real chaos experiments)
 make generate        # regenerate generated/shop-api.rules.yml from slo/shop-api.yaml
 make simulate        # replay a 30-minute, 5% error incident through the alert policies
 python3 -m slogen budget --objective 99.9 --window 30d --good 9995000 --total 10000000
@@ -86,7 +86,7 @@ a "recovery time" that was really the window length) and the follow-ups still op
 
 | Verified (run in the build environment) | Not verified (needs a run) |
 |---|---|
-| All 33 tests pass, including live chaos experiments against the demo service; CI syntax-checks the generated rules with `promtool check rules` | Prometheus *evaluating* those rules against real series: `promtool` proves they parse, not that they fire correctly |
+| All 34 tests pass, including live chaos experiments against the demo service; CI syntax-checks the generated rules with `promtool check rules` | Prometheus *evaluating* those rules against real series: `promtool` proves they parse, not that they fire correctly |
 | Generated rules file is reproducible from the SLO file (`--check`) | Alerts **firing** in Alertmanager: the 20 s experiments are far too short; the runner projects alert behaviour with the simulator instead |
 | Simulator and budget maths covered by tests and exercised from the CLI | `docker compose up` (no Docker daemon was available); only `docker compose config` was run |
 | Config checks: rule file structure, dashboard JSON, compose file | Grafana rendering with real data |

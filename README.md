@@ -13,7 +13,7 @@ several of them.
 ## 1 · [Delivery platform](showcase/1-delivery-platform.md)
 
 One service followed from a commit to an on-call page. A pipeline that refuses to ship a vulnerable image,
-a multi-AZ AWS platform designed to be deployed without stored cloud keys (not yet applied), GitOps promotion by pull request, and error-budget
+an AWS platform in Terraform with keyless OIDC deploys (its network module, state bucket and deploy role are applied on real AWS in Juega App; this folder's own ECS environments are not), GitOps promotion by pull request, and error-budget
 SLO alerting with runbooks.
 
 *The Trivy gate failed its first real run on four fixable HIGH CVEs in the base image — the fix was removing
@@ -53,7 +53,7 @@ The same practices on a real product I co-founded: **Juega App**, a free iOS, An
 pickup football matches: sign-ups, teams balanced from past ratings and results, teammate ratings, goals and
 own goals, and monthly and yearly stats that players can share as cards. It is **live and running** on an AWS EC2
 instance that I created and configured myself, with Terraform adapted from component 02, and every push to `dev`
-is deployed to it by GitHub Actions. Test users are using it now (a closed test, not a public release).
+is deployed to it by GitHub Actions. Test users are using it now (a closed test, not a public release); the dev environment runs in demo mode with fictional data.
 `dev` is the branch and environment that is deployed today; `main` is the production branch, and CI runs on both.
 I own development and operations; my partner owns marketing and sales. The source is in a private repository because
 the app is headed to the App Store and Google Play; the architecture and the decisions are public here.
@@ -71,6 +71,7 @@ the app is headed to the App Store and Google Play; the architecture and the dec
 | Data safety (from [08](projects/08-disaster-recovery-autopilot)) | Database accepts encrypted connections only; each nightly backup is restored into a scratch database and checked when it is taken, and carries a SHA-256 and exact row counts; a backup of live data that fails its integrity checks is refused; `restore.sh` runs the drill before replacing anything |
 | Reliability practice (from [07](projects/07-sre-reliability-lab)) | Two game days with hypotheses and measured results: crashes, a memory leak and spoofed addresses, then damaged backups and broken live data. Runbooks per alarm, written recovery targets and a postmortem template |
 | Application security | Rotating refresh tokens with reuse detection, per-account login lockout, row locks so a roster never overfills |
+| Result integrity | Results can be corrected, but only a few times: after the first save a player's teammate ratings can be edited twice and a match's goals three times. The counters live in the database (migration 012), the limits in the API, and both are tested |
 | Fair teams | A pure function splits players by position, then spreads the strongest of each position so both teams end level on average strength. Strength comes from received ratings (this group first, then everywhere, recent matches weighted a little more) nudged by recent results. Measured over 400 simulated groups (not real matches yet): average gap between teams 0.19 points, against 1.27 without it. The randomizer is optional and admins can still change teams by hand |
 | Sign-in with Google and Apple | The API checks the provider's signature, issuer, audience, expiry and nonce, and keeps only the provider's stable id. A provider login links to an existing account only when that account's email was confirmed, so registering someone's address first cannot take the account over. Accounts without a password confirm deletion with the provider |
 | Privacy by design | Profile photos are small, stored in the database (so backups cover them) and visible only to people who share a group. Share cards are drawn on the phone and show only the player's own numbers; the predicted win chance used for balancing is never shown or returned |
@@ -83,8 +84,8 @@ monitor, both in Terraform, email me before spend drifts.*
 
 `TypeScript` `Fastify` `PostgreSQL` `Expo` `Docker Compose` `Caddy` `Terraform` `AWS` `GitHub Actions` `SLOs`
 
-**Proven** (CI green on `dev` and `main` on 2026-11-11): API lint, typecheck and 293 tests, mobile typecheck, lint
-and 173 tests, hadolint, gitleaks, the Trivy image gate, a production-stack smoke test, a database-encryption check,
+**Proven** (CI and the deploy to `dev` green on 2026-11-13 at commit `dc61dff`; `main` last green on 2026-11-11 at `37f723f`): API lint, typecheck and 296 tests (293 on `main`), mobile typecheck, lint
+and 178 tests (173 on `main`), hadolint, gitleaks, the Trivy image gate, a production-stack smoke test, a database-encryption check,
 and backup drills that refuse a damaged backup and broken live data. The Terraform has been applied to my AWS
 account, the instance is up and serving, and the deploy job has run end to end: image build and SBOM, push to ECR, deploy over SSM through the
 OIDC role, and an HTTPS smoke test against the running server that checks `/health`, the request ID header and
@@ -96,7 +97,7 @@ Terraform shows no drift between the code and AWS.
 HTTPS health check on `/health` from 16 locations; CloudWatch alarms for host and OS failure and low CPU credits;
 and alarm, budget and cost-anomaly emails.
 **Not yet proven:** real-user numbers (requests, error rate, latency and uptime from the test users; none are published yet),
-a verified nightly backup run on the server (the first is due 2026-11-12), an alert when the site goes down (the
+a scheduled nightly backup run on the server (scheduled from 2026-11-12; its result is not yet recorded here), an alert when the site goes down (the
 health check runs, but its alarm must live in us-east-1, which my organization's region policy blocks), the load
 test and failure drills repeated on the real server (they ran on a development PC), burn-rate alerts, a deploy from
 `main` (its production environment is written in Terraform but not applied, so the job stays skipped), and the app on
@@ -181,10 +182,10 @@ Nothing here is claimed unless it has been run. Each component README ends with 
 | [02](projects/02-aws-terraform-platform) AWS platform | `fmt`, module wiring check, `init` + `validate` for bootstrap/dev/prod, TFLint, Checkov (21 findings triaged) | GitHub Actions |
 | [03](projects/03-k8s-gitops) Kubernetes GitOps | `kustomize build`, strict kubeconform validation, policy checks on both overlays, 15 policy tests | GitHub Actions |
 | [04](projects/04-observability-slo) Observability | Drift check, promtool config and rule checks, 8 alert-rule scenarios, amtool, compose validation; one real end-to-end alert run | GitHub Actions, local |
-| [05](projects/05-ai-reliability-platform) AI reliability | 40 unit and end-to-end tests, image build and scan, Terraform checks; provider-outage drill | GitHub Actions, local |
+| [05](projects/05-ai-reliability-platform) AI reliability | 46 unit and end-to-end tests, image build and scan, Terraform checks; provider-outage drill | GitHub Actions, local |
 | [06](projects/06-self-service-platform) Developer platform | 32 tests, scaffold → validate → generated-tests round trip, Terraform checks | GitHub Actions |
-| [07](projects/07-sre-reliability-lab) SRE lab | Lint, SLO validation, 33 tests including live chaos experiments, promtool rule checks | GitHub Actions |
-| [08](projects/08-disaster-recovery-autopilot) DR autopilot | Lint, playbook validation, 85 pytest tests against a real PostgreSQL 16 server, three recovery drills with their postmortem drafts committed | GitHub Actions, local |
+| [07](projects/07-sre-reliability-lab) SRE lab | Lint, SLO validation, 34 tests including live chaos experiments, promtool rule checks | GitHub Actions |
+| [08](projects/08-disaster-recovery-autopilot) DR autopilot | Lint, playbook validation, 91 pytest tests (1 skipped) against a real PostgreSQL 16 server, three recovery drills with their postmortem drafts committed | GitHub Actions, local |
 
 ### Running live in Juega App
 
@@ -202,7 +203,7 @@ versions are adapted copies in a private repository, and its deployed environmen
 | [05](projects/05-ai-reliability-platform) AI reliability | Nothing | Everything |
 | [06](projects/06-self-service-platform) Developer platform | Nothing | Everything |
 | [07](projects/07-sre-reliability-lab) SRE lab | The game-day method (hypothesis, injection, observation, verdict, follow-ups). Two game days run: crashes, memory runaway, spoofed addresses, load, then damaged backups and broken live data. One finding is live: a CloudWatch low-CPU-credits alarm on the instance | The chaos runner and simulator code; both game days ran on a development PC, not on AWS |
-| [08](projects/08-disaster-recovery-autopilot) DR autopilot | The ideas, rewritten as shell scripts and **deployed on the instance** (first scheduled nightly run due 2026-11-12, so not yet verified live): restore every backup into a scratch database, verify checksum and row counts, refuse suspect data, a restore drill before any real restore; CI proves the refusals on every push. A drill from the S3 copy has passed on the server, and an alarm fires if no verified backup reaches S3 for 26 hours. Also runbooks per alarm, RPO/RTO, a postmortem template | The `drpilot` service itself; no real incident has happened, so no postmortem has been written from one |
+| [08](projects/08-disaster-recovery-autopilot) DR autopilot | The ideas, rewritten as shell scripts and **deployed on the instance** (nightly runs scheduled from 2026-11-12; the first live result is not yet recorded here): restore every backup into a scratch database, verify checksum and row counts, refuse suspect data, a restore drill before any real restore; CI proves the refusals on every push. A drill from the S3 copy has passed on the server, and an alarm fires if no verified backup reaches S3 for 26 hours. Also runbooks per alarm, RPO/RTO, a postmortem template | The `drpilot` service itself; no real incident has happened, so no postmortem has been written from one |
 
 Live status of all eight pipelines:
 
@@ -219,18 +220,18 @@ Live status of all eight pipelines:
 
 | Pipeline | Runs | Passed | Typical duration |
 |---|---|---|---|
-| 01 Secure CI/CD | 9 | 8 | 2m 02s |
-| 02 AWS platform (Terraform) | 13 | 13 | 38s |
-| 03 Kubernetes GitOps | 6 | 6 | 23s |
+| 01 Secure CI/CD | 10 | 9 | 2m 00s |
+| 02 AWS platform (Terraform) | 14 | 14 | 37s |
+| 03 Kubernetes GitOps | 7 | 7 | 24s |
 | 04 Observability | 5 | 5 | 14s |
-| 05 AI reliability | 9 | 9 | 1m 15s |
+| 05 AI reliability | 10 | 10 | 1m 13s |
 | 06 Developer platform | 9 | 9 | 23s |
 | 07 SRE lab | 7 | 7 | 44s |
-| 08 DR autopilot | 10 | 10 | 1m 13s |
+| 08 DR autopilot | 12 | 12 | 1m 15s |
 
-Measured on 2026-11-11 from the GitHub Actions API: completed (passed or failed) runs on `main`, duration from run
+Measured on 2026-11-13 from the GitHub Actions API: completed (passed or failed) runs on `main`, duration from run
 start to last update, typical = median of the passing runs. Cancelled runs are not counted. Pipelines only run when
-their own folder changes. Sixty-eight runs, sixty-seven passed, and the one failure is pipeline 01's first run on
+their own folder changes. Seventy-four runs, seventy-three passed, and the one failure is pipeline 01's first run on
 2026-10-26, the Trivy gate catching fixable HIGH findings (described in project 1). The latest run of every pipeline
 passes.
 
@@ -277,12 +278,13 @@ GitHub only runs workflows from the repository root, so each pipeline lives in
 
 | Branch | Role |
 |---|---|
-| `main` | Always releasable. Only changes that already passed on `staging` are promoted here. Images are published and signed from `main` only. |
-| `staging` | Where changes land first. Tests, linting, security scans and integration checks run on every push and pull request. Dependabot opens its update PRs against it. |
+| `main` | The only branch. Work happens on short-lived branches merged by pull request once the component's checks pass. Images are published and signed from `main` only. Dependabot opens its grouped update pull requests against `main` and leaves major versions to planned upgrades. |
 
-Flow: work branch → pull request into `staging` → checks pass → merge → pull request `staging` → `main`.
-Automated deployment to a live environment is not wired up yet: the Terraform apply is a manual, reviewer-gated
-workflow run, and it will move onto `staging` once the first real AWS deployment has been done and documented.
+The eight components here are not deployed to a live environment: their Terraform apply is a manual,
+reviewer-gated workflow run that stays skipped until AWS variables are configured. The deployed product is
+[Juega App](#4--applied-juega-app-private-product-deployed), which lives in its own private repository with a `dev`
+branch (deployed automatically on every green push) and a `main` branch (its production environment is written but
+not applied).
 
 Run every offline check for all projects:
 

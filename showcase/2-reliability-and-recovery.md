@@ -44,15 +44,15 @@ It deliberately refuses to guess. Root cause, plain-language impact and action-i
 explicit `TODO (human)` sections, because an automated postmortem that invents a root cause is confident
 fiction.
 
-**Measured:** 85 tests against a real PostgreSQL 16 server, and three disaster-recovery drills whose
+**Measured:** 91 tests (1 skipped) against a real PostgreSQL 16 server, and three disaster-recovery drills whose
 postmortem drafts are committed — a clean restore, a poisoned backup that was skipped, and a rotted backup
 that was refused and escalated rather than restored.
 
 ## Proven
 
-All three workflows run on GitHub and pass: 40 tests plus an image build and HIGH/CRITICAL scan for 05;
-33 tests including live chaos experiments against the running demo service, plus `promtool check rules`, for
-07; and lint, playbook validation and the 85-test real-PostgreSQL suite for 08. CI also runs 08's three
+All three workflows run on GitHub and pass: 46 tests plus an image build and HIGH/CRITICAL scan for 05;
+34 tests including live chaos experiments against the running demo service, plus `promtool check rules`, for
+07; and lint, playbook validation and the 91-test real-PostgreSQL suite for 08. CI also runs 08's three
 recovery drills end to end on every change and keeps their postmortem drafts as build artifacts. The 05
 provider-outage drill is the one result produced locally, and its evidence is committed.
 
@@ -60,4 +60,4 @@ provider-outage drill is the one result produced locally, and its evidence is co
 
 CI syntax-checks 07's and 08's alert rules with `promtool check rules`, which proves they parse — not that
 they fire correctly. No Prometheus has evaluated them against real series. The Terraform for 08's backup
-bucket has not been applied, and no part of this has run against real AWS.
+bucket has not been applied, and none of 05, 07 or 08's own code has run against real AWS. The approach behind 07 and 08 has: Juega App runs adapted shell versions of the backup verification and restore drill on AWS, and a restore from its S3 copy passed on 2026-11-11.

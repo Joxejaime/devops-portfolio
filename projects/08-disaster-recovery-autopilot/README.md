@@ -52,7 +52,7 @@ Python 3.11+. The integration tests and drills also need PostgreSQL 14+ server a
 ```bash
 make install        # pyyaml, psycopg, pytest, ruff
 make test           # fast tests, no PostgreSQL needed
-make test-all       # 85 tests incl. real-PostgreSQL integration and all three drills (about 45 s)
+make test-all       # 92 tests (91 pass, 1 skipped in CI) incl. real-PostgreSQL integration and all three drills (about 45 s)
 make check          # validate every playbook
 make drills         # the three drills; drafts land in postmortems/drills/
 make replay         # a sample Alertmanager incident with no playbook: the escalation path
@@ -145,19 +145,18 @@ is what the RPO check reads.
 
 | Verified (run in the build environment) | Not verified |
 |---|---|
-| 85 tests pass: engine, playbooks, renderer, server, publisher, and real-PostgreSQL 16 tests of snapshot, restore, validation, restore-test and the service | **Terraform:** `infra/backup-bucket` has never had `fmt`, `validate` or TFLint run (no Terraform binary here); CI will, and has not yet |
+| 91 tests pass (1 skipped): engine, playbooks, renderer, server, publisher, and real-PostgreSQL 16 tests of snapshot, restore, validation, restore-test and the service | **Terraform:** `infra/backup-bucket` was not checked in the build environment (no Terraform binary there); CI now runs `fmt`, `init` + `validate` and TFLint on it and passes, but it has never been applied |
 | All three drills run end to end against a real PostgreSQL server; their drafts are committed | **AWS:** nothing was applied or stored; the S3 store is tested only against a stand-in `aws` script that checks the commands drpilot issues, not against S3 |
 | Corrupt and poisoned snapshots are skipped; with none left the restore refuses and touches nothing | **`infra-reapply-dev` and `k8s-rollback-crashloop`** run only against stub `terraform`/`kubectl`: argument order, the path into 02/03, and that prod is not matched |
 | `drpilot serve` rejects unauthenticated webhooks and answers bad input with 400 (tests) | **Prometheus and Alertmanager:** CI syntax-checks the alert rules with `promtool check rules`; the Alertmanager snippet is checked structurally by merging it into 04's real file, and neither has run in a live Alertmanager |
 | Alert rules, playbooks and runbooks agree with each other and with 04's rule files (a test) | **Real incidents:** none exist, so no draft here describes one |
 
-**Deployed in a real product, first live run pending.** Juega App (private repository) took the approach, not this
+**Deployed in a real product, first live result not yet recorded.** Juega App (private repository) took the approach, not this
 code. The nightly job is installed on the live instance by cron (03:15 UTC): it backs up the database, restores each
 backup into a scratch database, checks it, and writes a manifest with a checksum and exact row counts; it refuses to
-back up live data that fails its integrity checks, and `restore.sh` runs a drill before replacing anything. The first
-scheduled run on the instance is due 2026-11-12, so no live run has been verified yet. What is proven today is in CI,
+back up live data that fails its integrity checks, and `restore.sh` runs a drill before replacing anything. Scheduled runs on the instance start on 2026-11-12; no live result is recorded here yet. What is proven today is in CI,
 on every push: a damaged backup is refused and broken live data is not backed up. There are also runbooks per alarm, written RPO and RTO, and a
-postmortem template. Done on the instance on 2026-11-11: a drill from the S3 copy (passed) and an alarm when no verified backup reaches S3 for 26 hours. Not yet done: a verified scheduled nightly run (the first is due 2026-11-12).
+postmortem template. Done on the instance on 2026-11-11: a drill from the S3 copy (passed) and an alarm when no verified backup reaches S3 for 26 hours. Not yet recorded: the result of a scheduled nightly run (scheduled from 2026-11-12).
 `drpilot` itself is not deployed there, and no real incident has occurred, so there is still no postmortem written
 from one.
 
