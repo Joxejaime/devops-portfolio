@@ -8,7 +8,7 @@ error-budget SLOs.
 Built from [01](../projects/01-secure-cicd-pipeline) · [02](../projects/02-aws-terraform-platform) ·
 [03](../projects/03-k8s-gitops) · [04](../projects/04-observability-slo)
 
-![End to end view](../projects/00-start-here/docs/schematics/00-end-to-end.svg)
+![From a commit to an on-call page](schematics/1-delivery-platform.svg)
 
 ## The four stages
 

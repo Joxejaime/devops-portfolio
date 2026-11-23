@@ -7,7 +7,7 @@ one.
 
 Built from [06](../projects/06-self-service-platform)
 
-![The golden path](../projects/06-self-service-platform/docs/schematics/01-golden-path.svg)
+![Make the secure path the easy path](schematics/3-developer-platform.svg)
 
 ## What `platformctl` does
 
