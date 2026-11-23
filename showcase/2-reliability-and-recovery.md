@@ -56,8 +56,11 @@ All three workflows run on GitHub and pass: 40 tests plus an image build and HIG
 recovery drills end to end on every change and keeps their postmortem drafts as build artifacts. The 05
 provider-outage drill is the one result produced locally, and its evidence is committed.
 
+**On AWS:** 08 runs in [Juega App](../README.md#4--applied-juega-app-private-product-deployed)'s AWS account, adjusted to one server: the restore-and-verify backups run as shell
+scripts every night, upload to S3 and raise a CloudWatch alarm if no verified backup arrives for 26 hours, and a
+restore drill from the S3 copy has passed on the server. 05's Terraform (ECS Fargate, ALB, autoscaling) is planned for Juega App once it reaches 5,000 users.
+
 ## Not proven
 
 CI syntax-checks 07's and 08's alert rules with `promtool check rules`, which proves they parse — not that
-they fire correctly. No Prometheus has evaluated them against real series. The Terraform for 08's backup
-bucket has not been applied, and no part of this has run against real AWS.
+they fire correctly. No Prometheus has evaluated them against real series.

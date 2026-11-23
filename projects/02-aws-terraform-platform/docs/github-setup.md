@@ -82,5 +82,6 @@ credentials and no stored keys.
 
 It does **not** make the apply role safe by itself. Scope `apply_policy_arns` to the services
 this stack manages rather than `AdministratorAccess`; the variable has no default on purpose.
-And none of this has been applied to a real AWS account yet, so treat the first `plan` as the
-real test.
+This setup is applied in Juega App's AWS account, adjusted to its needs (the bootstrap and the deploy role). Its first
+apply and first deploy each failed once on details `validate` cannot see, so expect the same on a new account and treat
+the first `plan` there as the real test; see the main README.

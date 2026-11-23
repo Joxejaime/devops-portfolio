@@ -1,7 +1,8 @@
 # Security policy
 
-This repository is a DevOps portfolio. Nothing here runs in production and no real AWS account or cluster
-is attached, but the code is written to production standards and security reports are welcome.
+This repository is a DevOps portfolio. No AWS account or cluster is attached to this repository itself; its Terraform
+and practices run, adjusted, in Juega App's own AWS account. The code is written to production standards and security
+reports are welcome.
 
 ## Reporting a vulnerability
 

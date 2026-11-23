@@ -130,14 +130,14 @@ stateDiagram-v2
 
 ## AWS deployment (Terraform)
 
-What terraform/ declares. Not applied in the build environment, so treat it as reviewed but unproven. Without a certificate_arn the ALB forwards plain HTTP on port 80; with one it serves HTTPS on 443 and port 80 redirects to it (301). Tasks run in private subnets and reach the outside world only through the NAT gateway on port 443.
+What terraform/ declares. Validated in CI and planned for Juega App once it reaches 5,000 users. Without a certificate_arn the ALB forwards plain HTTP on port 80; with one it serves HTTPS on 443 and port 80 redirects to it (301). Tasks run in private subnets and reach the outside world only through the NAT gateway on port 443.
 
 ```mermaid
 %% title: AWS deployment (Terraform)
 %% headline: The AWS deployment: private tasks behind a load balancer
-%% takeaway: ECS Fargate, ALB, NAT, autoscaling and four CloudWatch alarms, all in Terraform (not yet applied).
+%% takeaway: ECS Fargate, ALB, NAT, autoscaling and four CloudWatch alarms, all in Terraform (planned for Juega App once it reaches 5,000 users).
 %% legend: entry=Internet,app=Load balancer and tasks,cloud=AWS service,obs=Monitoring,alert=Notification
-%% caption: What terraform/ declares. Not applied in the build environment, so treat it as reviewed but unproven. Without a certificate_arn the ALB forwards plain HTTP on port 80; with one it serves HTTPS on 443 and port 80 redirects to it (301). Tasks run in private subnets and reach the outside world only through the NAT gateway on port 443.
+%% caption: What terraform/ declares. Validated in CI and planned for Juega App once it reaches 5,000 users. Without a certificate_arn the ALB forwards plain HTTP on port 80; with one it serves HTTPS on 443 and port 80 redirects to it (301). Tasks run in private subnets and reach the outside world only through the NAT gateway on port 443.
 flowchart TB
     internet(["Internet clients"]) --> alb
     subgraph vpc["VPC"]

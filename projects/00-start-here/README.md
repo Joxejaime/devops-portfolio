@@ -56,13 +56,17 @@ more recent and more carefully verified; 05 and 07 go further into resilience pa
 
 Each project README ends with a **Verification status** table separating what was actually run from what was not.
 
-The CI workflows for 01 to 07 run on GitHub and pass; 08 was verified locally and its workflow has not run yet. Between them they cover lint and tests for every project, the
+The CI workflows for all eight components run on GitHub and their latest runs pass. Between them they cover lint and tests for every project, the
 image build with a Trivy gate and an SBOM, GHCR publish with a keyless cosign signature and provenance,
 `terraform validate` with TFLint and Checkov, kubeconform and policy checks on rendered manifests, and promtool
 rule unit tests. Two results were produced by running things locally rather than in CI: the end-to-end alert
 run in project 04 and the provider-outage drill in project 05, both recorded in their evidence files.
 
-**Still unproven anywhere:** applying Terraform to a real AWS account, an Argo CD sync on a real cluster,
+**Applied on AWS:** 02's Terraform (VPC module, state and OIDC bootstrap, keyless deploy role) and 08's backup and
+restore practices run in [Juega App](../../README.md#4--applied-juega-app-private-product-deployed)'s AWS account, adjusted to what the product needs today. 05's and 06's Terraform is
+planned for Juega App once it reaches 5,000 users.
+
+**Still unproven anywhere:** an Argo CD sync on a real cluster,
 Grafana rendering the dashboard, the Docker Compose stacks, and `cosign verify` against the published image.
 Anything marked "Not run" in a project table has not been executed.
 
