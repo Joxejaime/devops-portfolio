@@ -93,7 +93,7 @@ exactly that finding.
 
 | Verified (run in the build environment) | Not verified |
 |---|---|
-| All 32 tests, lint, scaffold -> validate -> generated tests round trip; CI also runs `terraform validate` on the module and the generated environments | `terraform apply`: not yet; the module is planned for Juega App once it reaches 5,000 users |
+| All 32 tests, lint, scaffold -> validate -> generated tests round trip; CI also runs `terraform validate` on the module and the generated environments | `terraform apply`: Terraform runs on AWS through Juega App (02's modules, adjusted); this module is planned for Juega App once it reaches 5,000 users |
 | Example outputs in `docs/examples/` are real tool output | Generated Dockerfile build and Kubernetes manifests not applied to a cluster |
 | | Registry defaults to `ghcr.io/joxejaime` and the example repositories are under `Joxejaime/`, so the defaults only fit a personal account. Generated `CODEOWNERS` names `@Joxejaime`, because GitHub team handles (`@org/team`) only exist in an organization; inside one, scaffold with `--code-owner @<org>/<team>` |
 

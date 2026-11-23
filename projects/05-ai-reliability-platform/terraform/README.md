@@ -14,7 +14,7 @@ target-tracking autoscaling, and CloudWatch alarms for 5xx, unhealthy hosts and 
 
 ## Status: validated in CI, planned for Juega App once it reaches 5,000 users
 
-CI runs the two checks below on every push. The stack is not applied yet: it is planned for Juega App once it reaches 5,000 users,
+CI runs the two checks below on every push. Terraform already runs on AWS through Juega App (02's modules, adjusted to one server); this stack is the next step, planned for Juega App once it reaches 5,000 users,
 when the single server moves behind ECS Fargate and an ALB. Its patterns (OIDC, alarms, least-privilege groups) already
 run there through 02.
 
