@@ -57,6 +57,8 @@ ran, in GitHub Actions or locally. Anything not yet run is listed under "Not pro
 
 ## 1 · [Delivery platform](showcase/1-delivery-platform.md)
 
+[![From a commit to an on-call page](showcase/schematics/1-delivery-platform.svg)](showcase/1-delivery-platform.md)
+
 One service followed from a commit to an on-call page. A pipeline that refuses to ship a vulnerable image,
 a multi-AZ AWS platform designed to deploy without stored cloud keys, GitOps promotion by pull request, and error-budget
 SLO alerting with runbooks. Its Terraform and keyless OIDC deploy are applied on a real AWS account and running in
@@ -70,6 +72,8 @@ the package installers and flattening the runtime so the scanned image is exactl
 
 ## 2 · [Reliability and recovery](showcase/2-reliability-and-recovery.md)
 
+[![What happens when it breaks: stay up, prove it, recover](showcase/schematics/2-reliability-and-recovery.svg)](showcase/2-reliability-and-recovery.md)
+
 Three answers to the same question: what happens when it breaks? A gateway that keeps serving through a
 provider outage, a lab that states reliability as numbers and rehearses failure against them, and an autopilot
 that drives recovery and drafts the postmortem from the timeline it observed.
@@ -82,6 +86,8 @@ defensible, not accidental.*
 → components [05](projects/05-ai-reliability-platform) · [07](projects/07-sre-reliability-lab) · [08](projects/08-disaster-recovery-autopilot)
 
 ## 3 · [Developer platform](showcase/3-developer-platform.md)
+
+[![Make the secure path the easy path](showcase/schematics/3-developer-platform.svg)](showcase/3-developer-platform.md)
 
 A paved road: one command produces a production-shaped service that already satisfies every guardrail, and the
 same rules audit any existing repository by rule ID.
