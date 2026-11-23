@@ -12,11 +12,11 @@ Highlights: private tasks, least-privilege security groups (tasks accept traffic
 ALB), immutable image tags, ECS deployment circuit breaker with automatic rollback, CPU
 target-tracking autoscaling, and CloudWatch alarms for 5xx, unhealthy hosts and p95 latency.
 
-## Status: reviewed, not applied
+## Status: validated in CI, planned for Juega App once it reaches 5,000 users
 
-The files in this directory were written and reviewed by hand but **have not been run
-through `terraform validate` or applied to a real AWS account**. Run the checks below
-before trusting them; CI runs the first two on every push.
+CI runs the two checks below on every push. The stack is not applied yet: it is planned for Juega App once it reaches 5,000 users,
+when the single server moves behind ECS Fargate and an ALB. Its patterns (OIDC, alarms, least-privilege groups) already
+run there through 02.
 
 ```bash
 terraform fmt -check -recursive

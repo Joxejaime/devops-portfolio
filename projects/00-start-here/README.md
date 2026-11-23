@@ -62,9 +62,9 @@ image build with a Trivy gate and an SBOM, GHCR publish with a keyless cosign si
 rule unit tests. Two results were produced by running things locally rather than in CI: the end-to-end alert
 run in project 04 and the provider-outage drill in project 05, both recorded in their evidence files.
 
-**Applied on AWS:** the Terraform patterns from 02 (VPC module, state and OIDC bootstrap, keyless deploy role) and the
-backup practices from 08, in adapted form, through [Juega App](../../README.md#4--applied-juega-app-private-product-deployed).
-These folders' own Terraform has not been applied as it stands.
+**Applied on AWS:** 02's Terraform (VPC module, state and OIDC bootstrap, keyless deploy role) and 08's backup and
+restore practices run in [Juega App](../../README.md#4--applied-juega-app-private-product-deployed)'s AWS account, adjusted to what the product needs today. 05's and 06's Terraform is
+planned for Juega App once it reaches 5,000 users.
 
 **Still unproven anywhere:** an Argo CD sync on a real cluster,
 Grafana rendering the dashboard, the Docker Compose stacks, and `cosign verify` against the published image.

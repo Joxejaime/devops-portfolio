@@ -219,10 +219,10 @@ versions are adapted copies in a private repository, and its deployed environmen
 | [02](projects/02-aws-terraform-platform) AWS platform | The VPC module (with NAT and flow logs made optional), the state bucket and OIDC provider bootstrap, the OIDC deploy role with no stored keys, TFLint and Checkov. **Applied to a real AWS account** and deployed through | The ECS service module, multi-AZ layout, production environment |
 | [03](projects/03-k8s-gitops) Kubernetes GitOps | Nothing | Everything: Juega App runs on one host with Docker Compose |
 | [04](projects/04-observability-slo) Observability | The SLO method: two written objectives, error-budget policy, request metrics by route, with the PromQL to measure them | The Prometheus, Alertmanager and Grafana stack; the PromQL has never run against a live Prometheus, so nothing alerts on burn rate |
-| [05](projects/05-ai-reliability-platform) AI reliability | Nothing | Everything |
-| [06](projects/06-self-service-platform) Developer platform | Nothing | Everything |
+| [05](projects/05-ai-reliability-platform) AI reliability | Nothing yet: its ECS Fargate, ALB and autoscaling Terraform is planned for Juega App once it reaches 5,000 users | Everything today |
+| [06](projects/06-self-service-platform) Developer platform | Nothing yet: its per-service environment module is planned for Juega App once it reaches 5,000 users | Everything today |
 | [07](projects/07-sre-reliability-lab) SRE lab | The game-day method (hypothesis, injection, observation, verdict, follow-ups). Two game days run: crashes, memory runaway, spoofed addresses, load, then damaged backups and broken live data. One finding is live: a CloudWatch low-CPU-credits alarm on the instance | The chaos runner and simulator code; both game days ran on a development PC, not on AWS |
-| [08](projects/08-disaster-recovery-autopilot) DR autopilot | The ideas, rewritten as shell scripts and **deployed on the instance** (verified on the server every night since 2026-11-14): restore every backup into a scratch database, verify checksum and row counts, refuse suspect data, a restore drill before any real restore; CI proves the refusals on every push. A drill from the S3 copy has passed on the server, and an alarm fires if no verified backup reaches S3 for 26 hours. Also runbooks per alarm, RPO/RTO, a postmortem template | The `drpilot` service itself; no real incident has happened, so no postmortem has been written from one |
+| [08](projects/08-disaster-recovery-autopilot) DR autopilot | The ideas, adjusted into shell scripts and **deployed on the instance** (verified every night since 2026-11-14): restore every backup into a scratch database, verify checksum and row counts, refuse suspect data, a restore drill before any real restore; CI proves the refusals on every push. A drill from the S3 copy has passed on the server, and an alarm fires if no verified backup reaches S3 for 26 hours. Also runbooks per alarm, RPO/RTO, a postmortem template | The `drpilot` service as written (its logic runs as the shell scripts instead); no real incident has happened, so no postmortem has been written from one |
 
 Live status of all eight pipelines:
 
@@ -254,10 +254,12 @@ their own folder changes. Seventy-four runs, seventy-three passed, and the one f
 2026-10-26, the Trivy gate catching fixable HIGH findings (described in project 1). The latest run of every pipeline
 passes.
 
-**Terraform on AWS:** applied and running, through [Juega App](#4--applied-juega-app-private-product-deployed). Its
-Terraform is adapted from 02 (the VPC module, the state bucket and OIDC bootstrap and the keyless deploy role) and has
-been applied to my AWS account, with every push to `dev` deployed through it. What has not been applied is the copy in
-these folders, as it stands, including 02's ECS and multi-AZ layout.
+**Terraform on AWS:** applied and running in Juega App's AWS account, adjusted to what the product needs today
+([section 4](#4--applied-juega-app-private-product-deployed)). From 02: the VPC module (with NAT and flow logs made
+optional), the state bucket and OIDC bootstrap and the keyless deploy role, with every push to `dev` deployed through
+them; one server takes the place of the ECS service and multi-AZ layout until the written scale-up conditions are met.
+From 08: the restore-and-verify backups, the S3 copy and its alarm, and the restore drill, run on the server as shell
+scripts. 05's and 06's Terraform is next, planned for Juega App once it reaches 5,000 users.
 
 **Not proven anywhere yet in these eight components:** an Argo CD
 sync on a real cluster, Grafana rendering the dashboard, the Docker Compose stacks, and `cosign verify` against the

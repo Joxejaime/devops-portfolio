@@ -37,13 +37,14 @@ All four workflows run on GitHub and pass.
 - **01** — lint, tests, hadolint, gitleaks, image build, container smoke test, Trivy gate, SBOM, GHCR publish by digest, cosign keyless signature, provenance attestation
 - **02** — `fmt`, module wiring check, `init` and `validate` for bootstrap, dev and prod, TFLint, Checkov with its first 21 findings triaged and each skip justified in the code
 - **03** — `kustomize build`, strict kubeconform validation, policy checks on both overlays, 15 policy tests
+- **02 on AWS** — applied and running in [Juega App](../README.md#4--applied-juega-app-private-product-deployed)'s AWS account, adjusted to what it needs today: the VPC module, the
+  state and OIDC bootstrap and the keyless deploy role, with every push to its `dev` branch deployed through them.
+  One server takes the place of the ECS service and multi-AZ layout until its scale-up conditions are met
 - **04** — generated-file drift check, promtool config and rule checks, 8 alert-rule scenarios, amtool, compose validation, plus one real end-to-end run where injected errors fired an alert that reached a webhook
 
 ## Not proven
 
-The Terraform in 02 has been applied to a real AWS account in adapted form, through [Juega App](../README.md#4--applied-juega-app-private-product-deployed): the VPC module, the state
-and OIDC bootstrap and the keyless deploy role, with every push to its `dev` branch deployed through them. This
-folder's own copy, with the ECS service and multi-AZ layout, has not been applied. There has been no Argo CD sync on a real cluster;
+There has been no Argo CD sync on a real cluster;
 Grafana has never rendered the dashboard; and `cosign verify` has not been run against the published image (signing itself is proven; the verify step lives in
 03's manual `promote` job, which has never run).
 [The portfolio guide](../projects/00-start-here/docs/PORTFOLIO-GUIDE.md) is the plan for converting each of
