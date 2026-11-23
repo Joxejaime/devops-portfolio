@@ -65,7 +65,7 @@ demonstration of behaviour, not a capacity benchmark.
 
 | Verified (run in the build environment) | Not verified (written carefully, needs a run) |
 |---|---|
-| All 46 unit and end-to-end tests pass | `terraform apply`: not yet, planned for Juega App once it reaches 5,000 users (CI runs `fmt`, `init -backend=false` and `validate`, which check syntax and provider schemas, not real behaviour) |
+| All 46 unit and end-to-end tests pass | `terraform apply`: Terraform runs on AWS through Juega App (02's modules, adjusted to one server); this ECS Fargate stack is the next step, planned for Juega App once it reaches 5,000 users (CI runs `fmt`, `init -backend=false` and `validate`, which check syntax and provider schemas, not real behaviour) |
 | Live gateway driven through the incident drill; the image is built and scanned for HIGH/CRITICAL on every CI run | `docker compose up`: the stack has never been started, only `docker compose config` |
 | Rule files, dashboard JSON and k8s hardening checks (`scripts/validate_configs.py`) | Prometheus rule evaluation and Grafana rendering with real data |
 | `docker compose config` parses the compose file | Kubernetes manifests applied to a cluster |

@@ -34,7 +34,7 @@ and Terraform checks on the module and the example environments.
 
 ## Not proven
 
-The Terraform module is not applied yet; it is planned for Juega App once it reaches 5,000 users, when more than one service needs its own environment. There is no portal UI — a Backstage plugin
+Terraform runs on AWS through Juega App (02's modules, adjusted); this module is the next step, planned for Juega App once it reaches 5,000 users, when more than one service needs its own environment. There is no portal UI — a Backstage plugin
 or a web form could sit on top of the CLI. And this is a small purpose-built checker, not a replacement for
 OPA, Kyverno or Conftest at scale.
 
