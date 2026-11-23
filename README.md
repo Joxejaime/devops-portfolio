@@ -10,6 +10,51 @@ several of them.
 
 ---
 
+## About me
+
+I'm **Jaime Castillo Araujo**, based in Managua, Nicaragua.
+
+I'm a DevOps and cloud engineer. I've worked as a **freelance DevOps and cloud consultant (part-time) since 2023**, and
+I'm **co-founder and technical lead of Juega App** (section 4), which I built and run on AWS. I came to it through
+production support: **Tech Support Specialist at Ibex**, supporting a point-of-sale SaaS platform,
+promoted from Level 1 to Level 2 after a year.
+
+That background is where this portfolio comes from. Time on the receiving end of outages teaches you which alerts
+are worth waking someone for, why a runbook matters more than a dashboard, and how much of an incident is
+communication rather than terminal commands. These projects are the next step: building the delivery pipelines,
+the infrastructure and the recovery tooling that decide whether a support queue is calm or on fire.
+
+### What I'm looking for
+
+Open to **remote roles across Latin America**, not limited to Nicaragua.
+
+- DevOps Engineer
+- Cloud Engineer / AWS Engineer
+- Platform or Infrastructure Engineer
+- SRE, where the role is about reliability engineering rather than the pager alone
+
+This repository is deliberately explicit about what has actually been run versus what has only been written. I'd
+rather be hired on what I can defend.
+
+### How this was built
+
+I build this with Claude Code, Anthropic's AI coding tool, under strong human oversight. Claude is the working
+tool; the decisions, the review and the control are mine. I decide what gets built and what each component has to
+prove, review the changes, check the repositories, decide what to fix or move, and run and debug the results. I keep
+a human hand on security and control throughout. The results in the tables below come from checks that actually
+ran, in GitHub Actions or locally. Anything not yet run is listed under "Not proven anywhere yet".
+
+### Contact
+
+| | |
+|---|---|
+| Email | [castilloajosejaime@gmail.com](mailto:castilloajosejaime@gmail.com) |
+| GitHub | [@Joxejaime](https://github.com/Joxejaime) |
+| LinkedIn | [jaime-castillo-araujo](https://www.linkedin.com/in/jaime-castillo-araujo) |
+| Location | Managua, Nicaragua · open to remote across LatAm |
+
+---
+
 ## 1 · [Delivery platform](showcase/1-delivery-platform.md)
 
 One service followed from a commit to an on-call page. A pipeline that refuses to ship a vulnerable image,
@@ -143,51 +188,6 @@ What CI and the first real deploy caught, rather than me:
 - After a deploy, `/metrics` was briefly reachable from the internet: the deploy unpacked a new Caddy config, but the
   running container kept the old file. A post-deploy step now restarts Caddy when its config changes and fails the
   deploy if `/metrics` answers from outside, and the smoke test checks the same from GitHub.
-
----
-
-## About me
-
-I'm **Jaime Castillo Araujo**, based in Managua, Nicaragua.
-
-I'm a DevOps and cloud engineer. I've worked as a **freelance DevOps and cloud consultant (part-time) since 2023**, and
-I'm **co-founder and technical lead of Juega App** (section 4), which I built and run on AWS. I came to it through
-production support: **Tech Support Specialist at Ibex**, supporting a point-of-sale SaaS platform,
-promoted from Level 1 to Level 2 after a year.
-
-That background is where this portfolio comes from. Time on the receiving end of outages teaches you which alerts
-are worth waking someone for, why a runbook matters more than a dashboard, and how much of an incident is
-communication rather than terminal commands. These projects are the next step: building the delivery pipelines,
-the infrastructure and the recovery tooling that decide whether a support queue is calm or on fire.
-
-### What I'm looking for
-
-Open to **remote roles across Latin America**, not limited to Nicaragua.
-
-- DevOps Engineer
-- Cloud Engineer / AWS Engineer
-- Platform or Infrastructure Engineer
-- SRE, where the role is about reliability engineering rather than the pager alone
-
-This repository is deliberately explicit about what has actually been run versus what has only been written. I'd
-rather be hired on what I can defend.
-
-### How this was built
-
-I build this with Claude Code, Anthropic's AI coding tool, under strong human oversight. Claude is the working
-tool; the decisions, the review and the control are mine. I decide what gets built and what each component has to
-prove, review the changes, check the repositories, decide what to fix or move, and run and debug the results. I keep
-a human hand on security and control throughout. The results in the tables below come from checks that actually
-ran, in GitHub Actions or locally. Anything not yet run is listed under "Not proven anywhere yet".
-
-### Contact
-
-| | |
-|---|---|
-| Email | [castilloajosejaime@gmail.com](mailto:castilloajosejaime@gmail.com) |
-| GitHub | [@Joxejaime](https://github.com/Joxejaime) |
-| LinkedIn | [jaime-castillo-araujo](https://www.linkedin.com/in/jaime-castillo-araujo) |
-| Location | Managua, Nicaragua · open to remote across LatAm |
 
 ---
 

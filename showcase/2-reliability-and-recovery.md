@@ -7,7 +7,7 @@ autopilot that drives the recovery and writes the postmortem draft with the time
 Built from [05](../projects/05-ai-reliability-platform) · [07](../projects/07-sre-reliability-lab) ·
 [08](../projects/08-disaster-recovery-autopilot)
 
-![Resilience patterns in the gateway](../projects/05-ai-reliability-platform/docs/schematics/01-architecture.svg)
+![What happens when it breaks: stay up, prove it, recover](schematics/2-reliability-and-recovery.svg)
 
 ## Stay up · [05 AI reliability platform](../projects/05-ai-reliability-platform)
 
