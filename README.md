@@ -150,8 +150,9 @@ What CI and the first real deploy caught, rather than me:
 
 I'm **Jaime Castillo Araujo**, based in Managua, Nicaragua.
 
-I'm a DevOps and cloud engineer, and I've worked as a **freelance DevOps and cloud consultant since 2023**. I came
-to it through production support: **Tech Support Specialist at Ibex**, supporting a point-of-sale SaaS platform,
+I'm a DevOps and cloud engineer. I've worked as a **freelance DevOps and cloud consultant (part-time) since 2023**, and
+I'm **co-founder and technical lead of Juega App** (section 4), which I built and run on AWS. I came to it through
+production support: **Tech Support Specialist at Ibex**, supporting a point-of-sale SaaS platform,
 promoted from Level 1 to Level 2 after a year.
 
 That background is where this portfolio comes from. Time on the receiving end of outages teaches you which alerts
@@ -163,13 +164,13 @@ the infrastructure and the recovery tooling that decide whether a support queue 
 
 Open to **remote roles across Latin America**, not limited to Nicaragua.
 
-- Junior DevOps Engineer / DevOps Engineer
-- Junior Cloud Engineer / AWS Engineer
-- Junior Platform or Infrastructure Engineer
-- Junior SRE, where the role is about reliability engineering rather than the pager alone
+- DevOps Engineer
+- Cloud Engineer / AWS Engineer
+- Platform or Infrastructure Engineer
+- SRE, where the role is about reliability engineering rather than the pager alone
 
-I'm early in the DevOps side of my career and direct about it: this repository is deliberately explicit about
-what has actually been run versus what has only been written. I'd rather be hired on what I can defend.
+This repository is deliberately explicit about what has actually been run versus what has only been written. I'd
+rather be hired on what I can defend.
 
 ### How this was built
 
