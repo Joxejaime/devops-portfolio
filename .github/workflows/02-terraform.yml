@@ -81,7 +81,7 @@ jobs:
           tflint --init
           tflint --recursive --minimum-failure-severity=warning
       - name: Checkov
-        uses: bridgecrewio/checkov-action@45edc9d8856b664db2ec251f5f8632361f0a67aa # v12
+        uses: bridgecrewio/checkov-action@b17b606d6ec72bb8ba5721ad5b7e340b80a9fc39 # v12
         with:
           directory: ${{ env.TF_DIR }}
           framework: terraform
@@ -108,7 +108,7 @@ jobs:
           jq '.runs[].results |= map(select((.suppressions // []) | length == 0))' "$f" > sarif-filtered/checkov.sarif
       - name: Upload SARIF
         if: always()
-        uses: github/codeql-action/upload-sarif@9418214df1f2c4b8128c770156c409013b07d6b9 # v3
+        uses: github/codeql-action/upload-sarif@d2aacf54c2fbc910db8d7ec338fdb54ea48c692d # v3
         with:
           sarif_file: sarif-filtered/checkov.sarif
 
