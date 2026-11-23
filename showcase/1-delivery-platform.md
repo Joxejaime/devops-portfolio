@@ -2,7 +2,7 @@
 
 **One service, `release-tracker`, followed from a commit to an on-call page.** It is built and signed by a
 pipeline that refuses to ship a vulnerable image. It is designed for a multi-AZ AWS platform deployed without stored
-cloud keys (not yet applied), reaches clusters only through reviewed pull requests, and is watched against
+cloud keys (the Terraform and OIDC deploy role are applied and running on AWS in [Juega App](../README.md#4--applied-juega-app-private-product-deployed)), reaches clusters only through reviewed pull requests, and is watched against
 error-budget SLOs.
 
 Built from [01](../projects/01-secure-cicd-pipeline) · [02](../projects/02-aws-terraform-platform) ·
@@ -41,7 +41,9 @@ All four workflows run on GitHub and pass.
 
 ## Not proven
 
-Terraform has never been applied to a real AWS account; there has been no Argo CD sync on a real cluster;
+The Terraform in 02 has been applied to a real AWS account in adapted form, through [Juega App](../README.md#4--applied-juega-app-private-product-deployed): the VPC module, the state
+and OIDC bootstrap and the keyless deploy role, with every push to its `dev` branch deployed through them. This
+folder's own copy, with the ECS service and multi-AZ layout, has not been applied. There has been no Argo CD sync on a real cluster;
 Grafana has never rendered the dashboard; and `cosign verify` has not been run against the published image (signing itself is proven; the verify step lives in
 03's manual `promote` job, which has never run).
 [The portfolio guide](../projects/00-start-here/docs/PORTFOLIO-GUIDE.md) is the plan for converting each of

@@ -13,8 +13,9 @@ several of them.
 ## 1 · [Delivery platform](showcase/1-delivery-platform.md)
 
 One service followed from a commit to an on-call page. A pipeline that refuses to ship a vulnerable image,
-a multi-AZ AWS platform designed to be deployed without stored cloud keys (not yet applied), GitOps promotion by pull request, and error-budget
-SLO alerting with runbooks.
+a multi-AZ AWS platform designed to deploy without stored cloud keys, GitOps promotion by pull request, and error-budget
+SLO alerting with runbooks. Its Terraform and keyless OIDC deploy are applied on a real AWS account and running in
+Juega App (section 4), on one host rather than the multi-AZ layout.
 
 *The Trivy gate failed its first real run on four fixable HIGH CVEs in the base image — the fix was removing
 the package installers and flattening the runtime so the scanned image is exactly the image that runs.*
@@ -253,11 +254,15 @@ their own folder changes. Seventy-four runs, seventy-three passed, and the one f
 2026-10-26, the Trivy gate catching fixable HIGH findings (described in project 1). The latest run of every pipeline
 passes.
 
-**Not proven anywhere yet in these eight components:** applying their own Terraform to a real AWS account, an Argo CD
+**Terraform on AWS:** applied and running, through [Juega App](#4--applied-juega-app-private-product-deployed). Its
+Terraform is adapted from 02 (the VPC module, the state bucket and OIDC bootstrap and the keyless deploy role) and has
+been applied to my AWS account, with every push to `dev` deployed through it. What has not been applied is the copy in
+these folders, as it stands, including 02's ECS and multi-AZ layout.
+
+**Not proven anywhere yet in these eight components:** an Argo CD
 sync on a real cluster, Grafana rendering the dashboard, the Docker Compose stacks, and `cosign verify` against the
 published image. Signing is proven (the `publish` job of 01 passes on `main`); verification is wired into 03's
-`promote` job, which only runs when started by hand and has never been run. The Terraform patterns from 02 have been applied for real in [Juega App](#4--applied-juega-app-private-product-deployed),
-a separate product, which is where the OIDC deploy and the backup practices were exercised on AWS.
+`promote` job, which only runs when started by hand and has never been run.
 [`projects/00-start-here/docs/PORTFOLIO-GUIDE.md`](projects/00-start-here/docs/PORTFOLIO-GUIDE.md) is the plan
 for turning each of those into evidence.
 
@@ -300,8 +305,9 @@ GitHub only runs workflows from the repository root, so each pipeline lives in
 | `staging` | Where changes land first. Tests, linting, security scans and integration checks run on every push and pull request. Dependabot opens its update PRs against it. |
 
 Flow: work branch → pull request into `staging` → checks pass → merge → pull request `staging` → `main`.
-Automated deployment to a live environment is not wired up yet: the Terraform apply is a manual, reviewer-gated
-workflow run, and it will move onto `staging` once the first real AWS deployment has been done and documented.
+In this repository the Terraform apply stays a manual, reviewer-gated workflow run, because nothing here is meant to
+stay running. Automated deployment to AWS runs in [Juega App](#4--applied-juega-app-private-product-deployed), where
+every push to `dev` is built, scanned and deployed over OIDC and SSM after all checks pass.
 
 Run every offline check for all projects:
 

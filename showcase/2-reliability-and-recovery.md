@@ -60,4 +60,6 @@ provider-outage drill is the one result produced locally, and its evidence is co
 
 CI syntax-checks 07's and 08's alert rules with `promtool check rules`, which proves they parse — not that
 they fire correctly. No Prometheus has evaluated them against real series. The Terraform for 08's backup
-bucket has not been applied, and no part of this has run against real AWS.
+bucket and `drpilot` itself have not been deployed. The practices have: in [Juega App](../README.md#4--applied-juega-app-private-product-deployed) the restore-and-verify backups run every
+night on AWS, upload to S3, and raise a CloudWatch alarm if no verified backup arrives for 26 hours, and a restore
+drill from the S3 copy has passed on the server.
