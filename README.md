@@ -95,8 +95,22 @@ Terraform shows no drift between the code and AWS.
 (15 tables, row counts matching the manifest); an alarm when no verified backup reaches S3 for 26 hours; a Route 53
 HTTPS health check on `/health` from 16 locations; CloudWatch alarms for host and OS failure and low CPU credits;
 and alarm, budget and cost-anomaly emails.
-**Not yet proven:** real-user numbers (requests, error rate, latency and uptime from the test users; none are published yet),
-a verified nightly backup run on the server (the first is due 2026-11-12), an alert when the site goes down (the
+**Measured on AWS** (CloudWatch and Route 53, 7 days to 2026-11-23, with test users on the app):
+
+| Measure | Result |
+|---|---|
+| Uptime (Route 53 HTTPS check on `/health`, 16 locations) | 100% healthy for all 7 days |
+| Host CPU (`t3.micro`) | 1.7% average, 15.7% peak |
+| CPU credits | Full at 288 the whole week, so the burstable host never ran short |
+| Instance and system status checks | 0 failures |
+| CloudWatch alarms | All 4 OK (backup missing, CPU credits, instance check, system check) |
+| Nightly backups | Verified and uploaded every night from 2026-11-14 to 2026-11-22 (each restored and checked before upload) |
+| Cost | $5.25 of usage from 1 to 22 November, all covered by AWS credits; $0 paid against the $20 budget |
+
+These are host and uptime numbers. Request counts, error rate and latency come from the API's `/metrics`, which is
+kept off the internet and is not collected into CloudWatch yet, so they are not published here.
+
+**Not yet proven:** request-level numbers from real users (requests, error rate and latency; see above), an alert when the site goes down (the
 health check runs, but its alarm must live in us-east-1, which my organization's region policy blocks), the load
 test and failure drills repeated on the real server (they ran on a development PC), burn-rate alerts, a deploy from
 `main` (its production environment is written in Terraform but not applied, so the job stays skipped), and the app on
