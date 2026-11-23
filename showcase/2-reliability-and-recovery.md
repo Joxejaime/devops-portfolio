@@ -50,8 +50,8 @@ that was refused and escalated rather than restored.
 
 ## Proven
 
-All three workflows run on GitHub and pass: 40 tests plus an image build and HIGH/CRITICAL scan for 05;
-33 tests including live chaos experiments against the running demo service, plus `promtool check rules`, for
+All three workflows run on GitHub and pass: 46 tests plus an image build and HIGH/CRITICAL scan for 05;
+34 tests including live chaos experiments against the running demo service, plus `promtool check rules`, for
 07; and lint, playbook validation and the 85-test real-PostgreSQL suite for 08. CI also runs 08's three
 recovery drills end to end on every change and keeps their postmortem drafts as build artifacts. The 05
 provider-outage drill is the one result produced locally, and its evidence is committed.
