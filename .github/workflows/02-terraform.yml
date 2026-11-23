@@ -77,6 +77,10 @@ jobs:
           tflint_version: v0.64.0
       - name: TFLint
         working-directory: ${{ env.TF_DIR }}
+        env:
+          # tflint --init downloads the aws ruleset from the GitHub API. Unauthenticated requests share a
+          # per-IP rate limit with every other job on the runner, which made this step fail at random.
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           tflint --init
           tflint --recursive --minimum-failure-severity=warning
