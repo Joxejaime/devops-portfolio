@@ -50,8 +50,10 @@ same rules audit any existing repository by rule ID.
 ## 4 · Applied: Juega App (private product, deployed)
 
 The same practices on a real product I co-founded: **Juega App**, a free iOS, Android and web app that organizes
-pickup football matches: sign-ups, teams balanced from past ratings and results, teammate ratings, goals and
-own goals, and monthly and yearly stats that players can share as cards. It is **live and running** on an AWS EC2
+pickup football matches: sign-ups, guest places for people without the app, teams balanced from past ratings and
+results, teammate ratings, goals and own goals, and monthly and yearly stats that players can share as cards. Two
+optional paid plans (Juega Plus for players, Organizador for group organizers) are built into the API and app but not
+on sale yet. It is **live and running** on an AWS EC2
 instance that I created and configured myself, with Terraform adapted from component 02, and every push to `dev`
 is deployed to it by GitHub Actions. Test users are using it now (a closed test, not a public release).
 `dev` is the branch and environment that is deployed today; `main` is the production branch, and CI runs on both.
@@ -71,27 +73,30 @@ the app is headed to the App Store and Google Play; the architecture and the dec
 | Data safety (from [08](projects/08-disaster-recovery-autopilot)) | Database accepts encrypted connections only; each nightly backup is restored into a scratch database and checked when it is taken, and carries a SHA-256 and exact row counts; a backup of live data that fails its integrity checks is refused; `restore.sh` runs the drill before replacing anything |
 | Reliability practice (from [07](projects/07-sre-reliability-lab)) | Two game days with hypotheses and measured results: crashes, a memory leak and spoofed addresses, then damaged backups and broken live data. Runbooks per alarm, written recovery targets and a postmortem template |
 | Application security | Rotating refresh tokens with reuse detection, per-account login lockout, row locks so a roster never overfills |
+| Match guests | Admins fill free places with numbered guests. Guests count toward capacity under the same row locks as sign-ups, play on teams with a neutral strength, and their goals count in the score. They live in their own table, so they never enter ratings, stats or rankings, and nothing changes after kickoff |
+| Paid plans | A RevenueCat webhook that checks a shared secret in constant time, applies each event once by its id, and keeps a cancelled plan until it expires. A group counts as premium only while its owner or an admin holds Organizador. Tested with test events only; real store purchases are not wired yet |
 | Fair teams | A pure function splits players by position, then spreads the strongest of each position so both teams end level on average strength. Strength comes from received ratings (this group first, then everywhere, recent matches weighted a little more) nudged by recent results. Measured over 400 simulated groups (not real matches yet): average gap between teams 0.19 points, against 1.27 without it. The randomizer is optional and admins can still change teams by hand |
 | Sign-in with Google and Apple | The API checks the provider's signature, issuer, audience, expiry and nonce, and keeps only the provider's stable id. A provider login links to an existing account only when that account's email was confirmed, so registering someone's address first cannot take the account over. Accounts without a password confirm deletion with the provider |
 | Privacy by design | Profile photos are small, stored in the database (so backups cover them) and visible only to people who share a group. Share cards are drawn on the phone and show only the player's own numbers; the predicted win chance used for balancing is never shown or returned |
 
 *The cost decision: one server at about $14 a month (including the uptime check) instead of ECS, a load balancer
-and a NAT gateway at $40–50+ before there are users. It is a deliberate first-deployment choice, scaled up once real
+and a NAT gateway at $40–50+ before there are users. Measured since the server started on 2026-11-11: a steady $0.46 a
+day, which is $14 a month, so the estimate held. It is a deliberate first-deployment choice, scaled up once real
 users need the capacity: the image, settings and backups carry over unchanged when traffic justifies moving to ECS
 and RDS, and the conditions for that move are written down in advance. A $20 monthly budget and a cost anomaly
 monitor, both in Terraform, email me before spend drifts.*
 
 `TypeScript` `Fastify` `PostgreSQL` `Expo` `Docker Compose` `Caddy` `Terraform` `AWS` `GitHub Actions` `SLOs`
 
-**Proven** (CI green on `dev` and `main` on 2026-11-11): API lint, typecheck and 293 tests, mobile typecheck, lint
-and 173 tests, hadolint, gitleaks, the Trivy image gate, a production-stack smoke test, a database-encryption check,
+**Proven** (CI green on `dev` on 2026-11-23; `main` last passed on 2026-11-11 and is 7 commits behind `dev`): API
+lint, typecheck and 309 tests, mobile typecheck, lint and 185 tests, hadolint, gitleaks, the Trivy image gate, a production-stack smoke test, a database-encryption check,
 and backup drills that refuse a damaged backup and broken live data. The Terraform has been applied to my AWS
 account, the instance is up and serving, and the deploy job has run end to end: image build and SBOM, push to ECR, deploy over SSM through the
 OIDC role, and an HTTPS smoke test against the running server that checks `/health`, the request ID header and
 that `/metrics` is not public. Infrastructure workflow: `terraform fmt`, wiring check, `validate` for the bootstrap,
 dev and prod environments, TFLint pass, and Checkov with 0 failed checks (each skip carries a written reason).
 Terraform shows no drift between the code and AWS.
-**Running on AWS** (verified 2026-11-11): a restore drill that downloads the newest backup from S3 and checks it
+**Running on AWS** (set up and verified 2026-11-11, all still OK on 2026-11-23): a restore drill that downloads the newest backup from S3 and checks it
 (15 tables, row counts matching the manifest); an alarm when no verified backup reaches S3 for 26 hours; a Route 53
 HTTPS health check on `/health` from 16 locations; CloudWatch alarms for host and OS failure and low CPU credits;
 and alarm, budget and cost-anomaly emails.
@@ -104,8 +109,8 @@ and alarm, budget and cost-anomaly emails.
 | CPU credits | Full at 288 the whole week, so the burstable host never ran short |
 | Instance and system status checks | 0 failures |
 | CloudWatch alarms | All 4 OK (backup missing, CPU credits, instance check, system check) |
-| Nightly backups | Verified and uploaded every night from 2026-11-14 to 2026-11-22 (each restored and checked before upload) |
-| Cost | $5.25 of usage from 1 to 22 November, all covered by AWS credits; $0 paid against the $20 budget |
+| Nightly backups | Verified and uploaded every night from 2026-11-14 to 2026-11-23 (each restored and checked before upload) |
+| Cost | $5.25 of usage from 2026-11-11 to 2026-11-22 ($0.46 a day: EC2, its public IPv4 address, EBS and Route 53), all covered by AWS credits; $0 paid against the $20 budget |
 
 These are host and uptime numbers. Request counts, error rate and latency come from the API's `/metrics`, which is
 kept off the internet and is not collected into CloudWatch yet, so they are not published here.
@@ -115,7 +120,7 @@ health check runs, but its alarm must live in us-east-1, which my organization's
 test and failure drills repeated on the real server (they ran on a development PC), burn-rate alerts, a deploy from
 `main` (its production environment is written in Terraform but not applied, so the job stays skipped), and the app on
 real iOS and Android devices. Sign in with Google and Apple is tested only against locally signed
-test tokens, not the real providers. Source code is available on request for hiring processes.
+test tokens, not the real providers, and the paid plans have not taken a real store purchase. Source code is available on request for hiring processes.
 
 What CI and the first real deploy caught, rather than me:
 - A production check rejected 23.7% of valid random JWT secrets, so about one deploy in four would not have started.
@@ -216,7 +221,7 @@ versions are adapted copies in a private repository, and its deployed environmen
 | [05](projects/05-ai-reliability-platform) AI reliability | Nothing | Everything |
 | [06](projects/06-self-service-platform) Developer platform | Nothing | Everything |
 | [07](projects/07-sre-reliability-lab) SRE lab | The game-day method (hypothesis, injection, observation, verdict, follow-ups). Two game days run: crashes, memory runaway, spoofed addresses, load, then damaged backups and broken live data. One finding is live: a CloudWatch low-CPU-credits alarm on the instance | The chaos runner and simulator code; both game days ran on a development PC, not on AWS |
-| [08](projects/08-disaster-recovery-autopilot) DR autopilot | The ideas, rewritten as shell scripts and **deployed on the instance** (first scheduled nightly run due 2026-11-12, so not yet verified live): restore every backup into a scratch database, verify checksum and row counts, refuse suspect data, a restore drill before any real restore; CI proves the refusals on every push. A drill from the S3 copy has passed on the server, and an alarm fires if no verified backup reaches S3 for 26 hours. Also runbooks per alarm, RPO/RTO, a postmortem template | The `drpilot` service itself; no real incident has happened, so no postmortem has been written from one |
+| [08](projects/08-disaster-recovery-autopilot) DR autopilot | The ideas, rewritten as shell scripts and **deployed on the instance** (verified on the server every night since 2026-11-14): restore every backup into a scratch database, verify checksum and row counts, refuse suspect data, a restore drill before any real restore; CI proves the refusals on every push. A drill from the S3 copy has passed on the server, and an alarm fires if no verified backup reaches S3 for 26 hours. Also runbooks per alarm, RPO/RTO, a postmortem template | The `drpilot` service itself; no real incident has happened, so no postmortem has been written from one |
 
 Live status of all eight pipelines:
 
@@ -233,18 +238,18 @@ Live status of all eight pipelines:
 
 | Pipeline | Runs | Passed | Typical duration |
 |---|---|---|---|
-| 01 Secure CI/CD | 9 | 8 | 2m 02s |
-| 02 AWS platform (Terraform) | 13 | 13 | 38s |
-| 03 Kubernetes GitOps | 6 | 6 | 23s |
+| 01 Secure CI/CD | 10 | 9 | 2m 00s |
+| 02 AWS platform (Terraform) | 14 | 14 | 38s |
+| 03 Kubernetes GitOps | 7 | 7 | 24s |
 | 04 Observability | 5 | 5 | 14s |
-| 05 AI reliability | 9 | 9 | 1m 15s |
+| 05 AI reliability | 10 | 10 | 1m 14s |
 | 06 Developer platform | 9 | 9 | 23s |
 | 07 SRE lab | 7 | 7 | 44s |
-| 08 DR autopilot | 10 | 10 | 1m 13s |
+| 08 DR autopilot | 12 | 12 | 1m 15s |
 
-Measured on 2026-11-11 from the GitHub Actions API: completed (passed or failed) runs on `main`, duration from run
+Measured on 2026-11-23 from the GitHub Actions API: completed (passed or failed) runs on `main`, duration from run
 start to last update, typical = median of the passing runs. Cancelled runs are not counted. Pipelines only run when
-their own folder changes. Sixty-eight runs, sixty-seven passed, and the one failure is pipeline 01's first run on
+their own folder changes. Seventy-four runs, seventy-three passed, and the one failure is pipeline 01's first run on
 2026-10-26, the Trivy gate catching fixable HIGH findings (described in project 1). The latest run of every pipeline
 passes.
 
