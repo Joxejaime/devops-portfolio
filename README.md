@@ -15,9 +15,8 @@ several of them.
 I'm **Jaime Castillo Araujo**, based in Managua, Nicaragua.
 
 I'm a DevOps and cloud engineer. I've worked as a **freelance DevOps and cloud consultant (part-time) since 2023**, and
-I'm **co-founder and technical lead of Juega App** (section 4), which I built and run on AWS. I came to it through
-production support: **Tech Support Specialist at Ibex**, supporting a point-of-sale SaaS platform,
-promoted from Level 1 to Level 2 after a year.
+I'm **co-founder and technical lead of Juega App** (section 4), which I built and run on AWS. I came from a tech
+support background.
 
 That background is where this portfolio comes from. Time on the receiving end of outages teaches you which alerts
 are worth waking someone for, why a runbook matters more than a dashboard, and how much of an incident is
